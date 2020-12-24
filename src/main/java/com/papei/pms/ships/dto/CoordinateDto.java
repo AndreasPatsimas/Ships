@@ -2,15 +2,13 @@ package com.papei.pms.ships.dto;
 
 import lombok.*;
 
-import java.util.List;
-
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class LocationDto {
+public class CoordinateDto {
 
-    private String type;
-    private CoordinateDto coordinates;
+    private Double lon;
+    private Double lat;
 }

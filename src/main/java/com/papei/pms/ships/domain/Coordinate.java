@@ -7,8 +7,8 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class Location {
+public class Coordinate {
 
-    private String type;
-    private Coordinate coordinates;
+    private Double lon;
+    private Double lat;
 }

@@ -1,7 +1,9 @@
 package com.papei.pms.ships.convert;
 
+import com.papei.pms.ships.domain.Coordinate;
 import com.papei.pms.ships.domain.Location;
 import com.papei.pms.ships.domain.Position;
+import com.papei.pms.ships.dto.CoordinateDto;
 import com.papei.pms.ships.dto.LocationDto;
 import com.papei.pms.ships.dto.PositionDto;
 import org.springframework.core.convert.converter.Converter;
@@ -39,7 +41,15 @@ public class PositionDtoToPositionConverter implements Converter<PositionDto, Po
 
         return Location.builder()
                 .type(locationDto.getType())
-                .coordinates(locationDto.getCoordinates())
+                .coordinates(buildCoordinates(locationDto.getCoordinates()))
+                .build();
+    }
+
+    private Coordinate buildCoordinates(CoordinateDto coordinates){
+
+        return Coordinate.builder()
+                .lon(coordinates.getLon())
+                .lat(coordinates.getLat())
                 .build();
     }
 }
