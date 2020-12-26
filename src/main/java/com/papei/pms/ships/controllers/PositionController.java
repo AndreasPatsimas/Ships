@@ -1,6 +1,7 @@
 package com.papei.pms.ships.controllers;
 
 import com.papei.pms.ships.dto.PositionDto;
+import com.papei.pms.ships.enums.Flag;
 import com.papei.pms.ships.services.PositionService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,5 +26,14 @@ public class PositionController {
         log.info("Fetch all positions by sourcemmsi {}", sourcemmsi);
 
         return positionService.fetchBySourcemmsi(sourcemmsi);
+    }
+
+    @GetMapping(value = "/flag/{shipFlag}",
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    List<PositionDto> findByShipFlag(@PathVariable("shipFlag") Flag shipFlag) {
+
+        log.info("Fetch all ships by flag {}", shipFlag.code());
+
+        return positionService.fetchByShipFlag(shipFlag);
     }
 }
