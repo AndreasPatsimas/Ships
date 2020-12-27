@@ -32,8 +32,21 @@ public class PositionController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     List<PositionDto> findByShipFlag(@PathVariable("shipFlag") Flag shipFlag) {
 
-        log.info("Fetch all ships by flag {}", shipFlag.code());
+        log.info("Fetch all positions by flag {}", shipFlag.code());
 
         return positionService.fetchByShipFlag(shipFlag);
+    }
+
+    @GetMapping(value = "/point/{longitude}/{latitude}/{maxDistance}/{minDistance}/{t}",
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    List<PositionDto> findPositionsNearGivenPoint(@PathVariable("longitude") Double longitude,
+                                                  @PathVariable("latitude") Double latitude,
+                                                  @PathVariable("maxDistance") Integer maxDistance,
+                                                  @PathVariable("minDistance") Integer minDistance,
+                                                  @PathVariable("t") Long t) {
+
+        log.info("Fetch all positions near to our point[{}, {}]", longitude, latitude);
+
+        return positionService.fetchPositionsNearGivenPoint(longitude, latitude, maxDistance, minDistance, t);
     }
 }

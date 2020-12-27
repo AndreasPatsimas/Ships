@@ -12,4 +12,10 @@ public interface PositionService {
     List<PositionDto> fetchBySourcemmsi(Integer sourcemmsi);
 
     List<PositionDto> fetchByShipFlag(Flag shipFlag);
+
+    List<PositionDto> fetchPositionsNearGivenPoint(Double longitude,
+                                                   Double latitude,
+                                                   Integer maxDistance,
+                                                   Integer minDistance,
+                                                   Long t);
 }
