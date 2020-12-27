@@ -8,6 +8,10 @@ import com.papei.pms.ships.repositories.PositionRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.data.geo.Circle;
+import org.springframework.data.geo.Distance;
+import org.springframework.data.geo.Metrics;
+import org.springframework.data.geo.Point;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -56,7 +60,11 @@ public class PositionServiceImpl implements PositionService {
     }
 
     @Override
-    public List<PositionDto> fetchPositionsNearGivenPoint(Double longitude, Double latitude, Integer maxDistance, Integer minDistance, Long t) {
+    public List<PositionDto> fetchPositionsNearGivenPoint(Double longitude,
+                                                          Double latitude,
+                                                          Integer maxDistance,
+                                                          Integer minDistance,
+                                                          Long t) {
 
         log.info("Fetch all positions near to our point[{}, {}] process begins", longitude, latitude);
 
@@ -66,6 +74,24 @@ public class PositionServiceImpl implements PositionService {
         List<PositionDto> positions = convert(positionList);
 
         log.info("Fetch all positions near to our point[{}, {}] process end", longitude, latitude);
+
+        return positions;
+    }
+
+    @Override
+    public List<PositionDto> fetchPositionsWithinCertainRadius(Double longitude, Double latitude, Double radius, Long t) {
+
+        log.info("Fetch all positions around center[{}, {}] with radius: {} process begins", longitude, latitude, radius);
+
+        Point center = new Point(longitude, latitude);
+        Distance radiusCircle = new Distance(radius, Metrics.KILOMETERS);
+        Circle circle = new Circle(center, radiusCircle);
+
+        List<Position> positionList = positionRepository.findByLocationWithinAndT(circle, t);
+
+        List<PositionDto> positions = convert(positionList);
+
+        log.info("Fetch all positions around center[{}, {}] with radius: {} process end", longitude, latitude, radius);
 
         return positions;
     }

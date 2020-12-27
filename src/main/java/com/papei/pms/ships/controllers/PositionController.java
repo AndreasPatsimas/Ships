@@ -49,4 +49,16 @@ public class PositionController {
 
         return positionService.fetchPositionsNearGivenPoint(longitude, latitude, maxDistance, minDistance, t);
     }
+
+    @GetMapping(value = "/circle/{longitude}/{latitude}/{radius}/{t}",
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    List<PositionDto> findPositionsWithinCertainRadius(@PathVariable("longitude") Double longitude,
+                                                       @PathVariable("latitude") Double latitude,
+                                                       @PathVariable("radius") Double radius,
+                                                       @PathVariable("t") Long t) {
+
+        log.info("Fetch all positions around center[{}, {}] with radius: {}", longitude, latitude, radius);
+
+        return positionService.fetchPositionsWithinCertainRadius(longitude, latitude, radius,t);
+    }
 }

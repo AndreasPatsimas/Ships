@@ -18,4 +18,6 @@ public interface PositionService {
                                                    Integer maxDistance,
                                                    Integer minDistance,
                                                    Long t);
+
+    List<PositionDto> fetchPositionsWithinCertainRadius(Double longitude, Double latitude, Double radius, Long t);
 }

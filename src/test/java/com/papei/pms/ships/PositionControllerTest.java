@@ -25,6 +25,7 @@ public class PositionControllerTest extends BasicWiremockTest {
     private final Double LATITUDE = 48.38249;
     private final Integer MAX_DISTANCE = 500;
     private final Integer MIN_DISTANCE = 0;
+    private final Double RADIUS = 1.0;
     private final Long T = 1443680752L;
 
     @Test
@@ -49,6 +50,15 @@ public class PositionControllerTest extends BasicWiremockTest {
     public void c_findPositionsNearGivenPoint() throws Exception {
         this.mockMvc.perform(get("/positions/point/{longitude}/{latitude}/{maxDistance}/{minDistance}/{t}",
                 LONGITUDE, LATITUDE, MAX_DISTANCE, MIN_DISTANCE, T))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/json;charset=UTF-8"));
+    }
+
+    @Test
+    public void d_findPositionsWithinCertainRadius() throws Exception {
+        this.mockMvc.perform(get("/positions/circle/{longitude}/{latitude}/{radius}/{t}",
+                LONGITUDE, LATITUDE, RADIUS, T))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json;charset=UTF-8"));
