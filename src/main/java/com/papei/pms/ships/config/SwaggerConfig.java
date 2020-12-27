@@ -62,7 +62,8 @@ public class SwaggerConfig {
 
         return or(
                 regex("/positions.*"),
-                regex("/anfrs.*")
+                regex("/anfrs.*"),
+                regex("/areas.*")
         );
     }
 
