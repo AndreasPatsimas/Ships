@@ -16,6 +16,7 @@ public class PolygonToPolygonResponseDtoConverter implements Converter<Polygon, 
                 .id(polygon.getId())
                 .name(polygon.getName())
                 .area(buildArea(polygon.getArea()))
+                .t(polygon.getT())
                 .build();
     }
 

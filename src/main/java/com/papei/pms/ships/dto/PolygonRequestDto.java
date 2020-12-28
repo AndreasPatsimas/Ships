@@ -16,4 +16,5 @@ public class PolygonRequestDto {
     private List<Double> p2;
     private List<Double> p3;
     private List<Double> p4;
+    private Long t;
 }

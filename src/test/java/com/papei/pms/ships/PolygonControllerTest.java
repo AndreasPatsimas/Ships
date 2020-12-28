@@ -27,6 +27,7 @@ public class PolygonControllerTest extends BasicWiremockTest {
 
     private final Double LONGITUDE = 23.727789;
     private final Double LATITUDE = 37.9639439;
+    private final Long T = 1443680752L;
 
     @Ignore
     @Test
@@ -38,6 +39,7 @@ public class PolygonControllerTest extends BasicWiremockTest {
                 .p2(Stream.of(23.7263221, 37.9562363).collect(Collectors.toList()))
                 .p3(Stream.of(23.7252362, 37.9707717).collect(Collectors.toList()))
                 .p4(Stream.of(23.7613592, 37.976186).collect(Collectors.toList()))
+                .t(T)
                 .build();
 
         this.mockMvc.perform(post("/areas")
@@ -48,8 +50,8 @@ public class PolygonControllerTest extends BasicWiremockTest {
 
     @Test
     public void b_checkIfShipExistsInsidePolygon() throws Exception {
-        this.mockMvc.perform(get("/areas/{longitude}/{latitude}",
-                LONGITUDE, LATITUDE))
+        this.mockMvc.perform(get("/areas/{longitude}/{latitude}/{dateTime}",
+                LONGITUDE, LATITUDE, T))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json;charset=UTF-8"));

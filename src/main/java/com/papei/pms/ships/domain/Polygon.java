@@ -20,4 +20,5 @@ public class Polygon {
 
     private String name;
     private Area area;
+    private Long t;
 }

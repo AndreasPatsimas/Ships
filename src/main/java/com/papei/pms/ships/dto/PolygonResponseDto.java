@@ -12,4 +12,5 @@ public class PolygonResponseDto {
     private String id;
     private String name;
     private AreaDto area;
+    private Long t;
 }

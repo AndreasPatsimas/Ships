@@ -24,6 +24,7 @@ public class PolygonRequestDtoToPolygonConverter implements Converter<PolygonReq
         return Polygon.builder()
                 .name(polygonRequestDto.getName())
                 .area(buildArea(polygonRequestDto))
+                .t(polygonRequestDto.getT())
                 .build();
     }
 
