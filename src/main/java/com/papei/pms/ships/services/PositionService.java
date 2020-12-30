@@ -18,10 +18,12 @@ public interface PositionService {
                                                    Double latitude,
                                                    Integer maxDistance,
                                                    Integer minDistance,
-                                                   LocalDateTime dateTime);
+                                                   LocalDateTime dateTimeFrom,
+                                                   LocalDateTime dateTimeTo);
 
     List<PositionDto> fetchPositionsWithinCertainRadius(Double longitude,
                                                         Double latitude,
                                                         Double radius,
-                                                        LocalDateTime dateTime);
+                                                        LocalDateTime dateTimeFrom,
+                                                        LocalDateTime dateTimeTo);
 }

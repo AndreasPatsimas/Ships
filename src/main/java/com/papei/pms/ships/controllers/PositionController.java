@@ -38,29 +38,32 @@ public class PositionController {
         return positionService.fetchByShipFlag(shipFlag);
     }
 
-    @GetMapping(value = "/point/{longitude}/{latitude}/{maxDistance}/{minDistance}/{dateTime}",
+    @GetMapping(value = "/point/{longitude}/{latitude}/{maxDistance}/{minDistance}/{dateTimeFrom}/{dateTimeTo}",
             produces = MediaType.APPLICATION_JSON_VALUE)
     List<PositionDto> findPositionsNearGivenPoint(@PathVariable("longitude") Double longitude,
                                                   @PathVariable("latitude") Double latitude,
                                                   @PathVariable("maxDistance") Integer maxDistance,
                                                   @PathVariable("minDistance") Integer minDistance,
-                                                  @PathVariable("dateTime") String dateTime) {
+                                                  @PathVariable("dateTimeFrom") String dateTimeFrom,
+                                                  @PathVariable("dateTimeTo") String dateTimeTo) {
 
         log.info("Fetch all positions near to our point[{}, {}]", longitude, latitude);
 
         return positionService.fetchPositionsNearGivenPoint(longitude, latitude, maxDistance, minDistance,
-                LocalDateTime.parse(dateTime));
+                LocalDateTime.parse(dateTimeFrom), LocalDateTime.parse(dateTimeTo));
     }
 
-    @GetMapping(value = "/circle/{longitude}/{latitude}/{radius}/{dateTime}",
+    @GetMapping(value = "/circle/{longitude}/{latitude}/{radius}/{dateTimeFrom}/{dateTimeTo}",
             produces = MediaType.APPLICATION_JSON_VALUE)
     List<PositionDto> findPositionsWithinCertainRadius(@PathVariable("longitude") Double longitude,
                                                        @PathVariable("latitude") Double latitude,
                                                        @PathVariable("radius") Double radius,
-                                                       @PathVariable("dateTime") String dateTime) {
+                                                       @PathVariable("dateTimeFrom") String dateTimeFrom,
+                                                       @PathVariable("dateTimeTo") String dateTimeTo) {
 
         log.info("Fetch all positions around center[{}, {}] with radius: {}", longitude, latitude, radius);
 
-        return positionService.fetchPositionsWithinCertainRadius(longitude, latitude, radius, LocalDateTime.parse(dateTime));
+        return positionService.fetchPositionsWithinCertainRadius(longitude, latitude, radius, LocalDateTime.parse(dateTimeFrom),
+                LocalDateTime.parse(dateTimeTo));
     }
 }

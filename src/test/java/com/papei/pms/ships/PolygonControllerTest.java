@@ -30,6 +30,8 @@ public class PolygonControllerTest extends BasicWiremockTest {
     private final Double LATITUDE = 37.9639439;
     private final LocalDateTime DATE_TIME = LocalDateTime.parse("2015-10-01T09:25:52");
 //    private final Long T = 1443680752L;
+    private final LocalDateTime DATE_TIME_FROM = LocalDateTime.parse("2015-10-01T08:25:52");
+    private final LocalDateTime DATE_TIME_TO = LocalDateTime.parse("2015-10-01T09:25:53");
 
     @Ignore
     @Test
@@ -52,8 +54,8 @@ public class PolygonControllerTest extends BasicWiremockTest {
 
     @Test
     public void b_checkIfShipExistsInsidePolygon() throws Exception {
-        this.mockMvc.perform(get("/areas/{longitude}/{latitude}/{dateTime}",
-                LONGITUDE, LATITUDE, DATE_TIME))
+        this.mockMvc.perform(get("/areas/{longitude}/{latitude}/{dateTimeFrom}/{dateTimeTo}",
+                LONGITUDE, LATITUDE, DATE_TIME_FROM, DATE_TIME_TO))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json;charset=UTF-8"));

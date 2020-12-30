@@ -28,7 +28,8 @@ public class PositionControllerTest extends BasicWiremockTest {
     private final Integer MAX_DISTANCE = 500;
     private final Integer MIN_DISTANCE = 0;
     private final Double RADIUS = 1.0;
-    private final LocalDateTime DATE_TIME = LocalDateTime.parse("2015-10-01T09:25:52");
+    private final LocalDateTime DATE_TIME_FROM = LocalDateTime.parse("2015-10-01T08:25:52");
+    private final LocalDateTime DATE_TIME_TO = LocalDateTime.parse("2015-10-01T09:25:53");
 //    private final Long T = 1443680752L;
 
     @Test
@@ -51,8 +52,8 @@ public class PositionControllerTest extends BasicWiremockTest {
 
     @Test
     public void c_findPositionsNearGivenPoint() throws Exception {
-        this.mockMvc.perform(get("/positions/point/{longitude}/{latitude}/{maxDistance}/{minDistance}/{dateTime}",
-                LONGITUDE, LATITUDE, MAX_DISTANCE, MIN_DISTANCE, DATE_TIME))
+        this.mockMvc.perform(get("/positions/point/{longitude}/{latitude}/{maxDistance}/{minDistance}/{dateTimeFrom}/{dateTimeTo}",
+                LONGITUDE, LATITUDE, MAX_DISTANCE, MIN_DISTANCE, DATE_TIME_FROM, DATE_TIME_TO))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json;charset=UTF-8"));
@@ -60,8 +61,8 @@ public class PositionControllerTest extends BasicWiremockTest {
 
     @Test
     public void d_findPositionsWithinCertainRadius() throws Exception {
-        this.mockMvc.perform(get("/positions/circle/{longitude}/{latitude}/{radius}/{dateTime}",
-                LONGITUDE, LATITUDE, RADIUS, DATE_TIME))
+        this.mockMvc.perform(get("/positions/circle/{longitude}/{latitude}/{radius}/{dateTimeFrom}/{dateTimeTo}",
+                LONGITUDE, LATITUDE, RADIUS, DATE_TIME_FROM, DATE_TIME_TO))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json;charset=UTF-8"));

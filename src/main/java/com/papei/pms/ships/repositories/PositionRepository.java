@@ -17,11 +17,17 @@ public interface PositionRepository extends MongoRepository<Position, String> {
     @Query(value = "{ 'shipFlag' : ?0 }")
     List<Position> findPositionByShipFlag(String shipFlag);
 
-    @Query(value = "{'$and':[{location:{$near:{$geometry:{type:'Point',coordinates:[?0 , ?1]},$maxDistance:?2, $minDistance: ?3}}},{t: ?4}]}")
-    List<Position> findPositionsNearGivenPoint(Double longitude, Double latitude, Integer maxDistance, Integer minDistance, Long t);
+    @Query(value = "{'$and':[{location:{$near:{$geometry:{type:'Point',coordinates:[?0 , ?1]},$maxDistance:?2, $minDistance: ?3}}}, " +
+            "{t: {$gt: ?4}}, {t: {$lt: ?5}}]}")
+    List<Position> findPositionsNearGivenPoint(Double longitude,
+                                               Double latitude,
+                                               Integer maxDistance,
+                                               Integer minDistance,
+                                               Long t1,
+                                               Long t2);
 
 //    @Query(value = "{'$and': [{location: {$geoWithin: {$centerSphere: [[?0, ?1], ?2 / 6378.1]}}}, {t: ?3}]}")
 //    List<Position> findPositionsWithinCertainRadius(Double longitude, Double latitude, Integer radius, Long t);
 
-    List<Position> findByLocationWithinAndT(Circle circle, Long t);
+    List<Position> findByLocationWithinAndTBetween(Circle circle, Long t1, Long t2);
 }

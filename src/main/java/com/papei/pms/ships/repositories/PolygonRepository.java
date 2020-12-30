@@ -8,6 +8,7 @@ import java.util.Optional;
 
 public interface PolygonRepository extends MongoRepository<Polygon, String> {
 
-    @Query(value = "{'$and':[{area: {$geoIntersects: {$geometry: {type: 'Point', coordinates: [?0, ?1]}}}},{t: ?2}]}")
-    Optional<Polygon> checkIfShipExistsInsidePolygon(Double longitude, Double latitude, Long t);
+    @Query(value = "{'$and':[{area: {$geoIntersects: {$geometry: {type: 'Point', coordinates: [?0, ?1]}}}}, " +
+            "{t: {$gt: ?2}}, {t: {$lt: ?3}}]}")
+    Optional<Polygon> checkIfShipExistsInsidePolygon(Double longitude, Double latitude, Long t1, Long t2);
 }

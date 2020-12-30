@@ -10,5 +10,8 @@ public interface PolygonService {
 
     void savePolygon(PolygonRequestDto polygonRequestDto);
 
-    boolean checkIfShipExistsInsidePolygon(Double longitude, Double latitude, LocalDateTime dateTime);
+    boolean checkIfShipExistsInsidePolygon(Double longitude,
+                                           Double latitude,
+                                           LocalDateTime dateTimeFrom,
+                                           LocalDateTime dateTimeTo);
 }

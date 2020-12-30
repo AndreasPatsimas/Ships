@@ -67,13 +67,15 @@ public class PositionServiceImpl implements PositionService {
                                                           Double latitude,
                                                           Integer maxDistance,
                                                           Integer minDistance,
-                                                          LocalDateTime dateTime) {
+                                                          LocalDateTime dateTimeFrom,
+                                                          LocalDateTime dateTimeTo) {
 
         log.info("Fetch all positions near to our point[{}, {}] process begins", longitude, latitude);
 
         List<Position> positionList = positionRepository
                 .findPositionsNearGivenPoint(longitude, latitude, maxDistance, minDistance,
-                        Date.from(dateTime.atZone(ZoneId.systemDefault()).toInstant()).getTime() / 1000);
+                        Date.from(dateTimeFrom.atZone(ZoneId.systemDefault()).toInstant()).getTime() / 1000,
+                        Date.from(dateTimeTo.atZone(ZoneId.systemDefault()).toInstant()).getTime() / 1000);
 
         List<PositionDto> positions = convert(positionList);
 
@@ -86,7 +88,7 @@ public class PositionServiceImpl implements PositionService {
     public List<PositionDto> fetchPositionsWithinCertainRadius(Double longitude,
                                                                Double latitude,
                                                                Double radius,
-                                                               LocalDateTime dateTime) {
+                                                               LocalDateTime dateTimeFrom, LocalDateTime dateTimeTo) {
 
         log.info("Fetch all positions around center[{}, {}] with radius: {} process begins", longitude, latitude, radius);
 
@@ -94,8 +96,9 @@ public class PositionServiceImpl implements PositionService {
         Distance radiusCircle = new Distance(radius, Metrics.KILOMETERS);
         Circle circle = new Circle(center, radiusCircle);
 
-        List<Position> positionList = positionRepository.findByLocationWithinAndT(circle,
-                Date.from(dateTime.atZone(ZoneId.systemDefault()).toInstant()).getTime() / 1000);
+        List<Position> positionList = positionRepository.findByLocationWithinAndTBetween(circle,
+                Date.from(dateTimeFrom.atZone(ZoneId.systemDefault()).toInstant()).getTime() / 1000,
+                Date.from(dateTimeTo.atZone(ZoneId.systemDefault()).toInstant()).getTime() / 1000);
 
         List<PositionDto> positions = convert(positionList);
 

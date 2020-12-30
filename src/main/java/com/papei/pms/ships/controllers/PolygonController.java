@@ -27,14 +27,16 @@ public class PolygonController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @GetMapping(value = "/{longitude}/{latitude}/{dateTime}",
+    @GetMapping(value = "/{longitude}/{latitude}/{dateTimeFrom}/{dateTimeTo}",
             produces = MediaType.APPLICATION_JSON_VALUE)
     boolean checkIfShipExistsInsidePolygon(@PathVariable("longitude") Double longitude,
                                            @PathVariable("latitude") Double latitude,
-                                           @PathVariable("dateTime") String dateTime) {
+                                           @PathVariable("dateTimeFrom") String dateTimeFrom,
+                                           @PathVariable("dateTimeTo") String dateTimeTo) {
 
         log.info("Check if ship with coordinates: [{}, {}] exists inside polygon", longitude, latitude);
 
-        return polygonService.checkIfShipExistsInsidePolygon(longitude, latitude, LocalDateTime.parse(dateTime));
+        return polygonService.checkIfShipExistsInsidePolygon(longitude, latitude,
+                LocalDateTime.parse(dateTimeFrom), LocalDateTime.parse(dateTimeTo));
     }
 }
