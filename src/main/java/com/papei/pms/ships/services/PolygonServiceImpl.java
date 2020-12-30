@@ -8,6 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.Optional;
 
 @Service
@@ -37,11 +40,12 @@ public class PolygonServiceImpl implements PolygonService {
     }
 
     @Override
-    public boolean checkIfShipExistsInsidePolygon(Double longitude, Double latitude, Long dateTime) {
+    public boolean checkIfShipExistsInsidePolygon(Double longitude, Double latitude, LocalDateTime dateTime) {
 
         log.info("Check if ship with coordinates: [{}, {}] exists inside polygon process begins", longitude, latitude);
 
-        Optional<Polygon> polygon = polygonRepository.checkIfShipExistsInsidePolygon(longitude, latitude, dateTime);
+        Optional<Polygon> polygon = polygonRepository.checkIfShipExistsInsidePolygon(longitude, latitude,
+                Date.from(dateTime.atZone(ZoneId.systemDefault()).toInstant()).getTime() / 1000);
 
         if (polygon.isPresent())
             return true;

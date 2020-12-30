@@ -8,6 +8,8 @@ import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.stereotype.Component;
 
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -24,7 +26,7 @@ public class PolygonRequestDtoToPolygonConverter implements Converter<PolygonReq
         return Polygon.builder()
                 .name(polygonRequestDto.getName())
                 .area(buildArea(polygonRequestDto))
-                .t(polygonRequestDto.getT())
+                .t(Date.from(polygonRequestDto.getDateTime().atZone(ZoneId.systemDefault()).toInstant()).getTime() / 1000)
                 .build();
     }
 

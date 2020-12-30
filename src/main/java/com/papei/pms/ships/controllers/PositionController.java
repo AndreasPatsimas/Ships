@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @CrossOrigin(origins = "*")
@@ -37,28 +38,29 @@ public class PositionController {
         return positionService.fetchByShipFlag(shipFlag);
     }
 
-    @GetMapping(value = "/point/{longitude}/{latitude}/{maxDistance}/{minDistance}/{t}",
+    @GetMapping(value = "/point/{longitude}/{latitude}/{maxDistance}/{minDistance}/{dateTime}",
             produces = MediaType.APPLICATION_JSON_VALUE)
     List<PositionDto> findPositionsNearGivenPoint(@PathVariable("longitude") Double longitude,
                                                   @PathVariable("latitude") Double latitude,
                                                   @PathVariable("maxDistance") Integer maxDistance,
                                                   @PathVariable("minDistance") Integer minDistance,
-                                                  @PathVariable("t") Long t) {
+                                                  @PathVariable("dateTime") String dateTime) {
 
         log.info("Fetch all positions near to our point[{}, {}]", longitude, latitude);
 
-        return positionService.fetchPositionsNearGivenPoint(longitude, latitude, maxDistance, minDistance, t);
+        return positionService.fetchPositionsNearGivenPoint(longitude, latitude, maxDistance, minDistance,
+                LocalDateTime.parse(dateTime));
     }
 
-    @GetMapping(value = "/circle/{longitude}/{latitude}/{radius}/{t}",
+    @GetMapping(value = "/circle/{longitude}/{latitude}/{radius}/{dateTime}",
             produces = MediaType.APPLICATION_JSON_VALUE)
     List<PositionDto> findPositionsWithinCertainRadius(@PathVariable("longitude") Double longitude,
                                                        @PathVariable("latitude") Double latitude,
                                                        @PathVariable("radius") Double radius,
-                                                       @PathVariable("t") Long t) {
+                                                       @PathVariable("dateTime") String dateTime) {
 
         log.info("Fetch all positions around center[{}, {}] with radius: {}", longitude, latitude, radius);
 
-        return positionService.fetchPositionsWithinCertainRadius(longitude, latitude, radius,t);
+        return positionService.fetchPositionsWithinCertainRadius(longitude, latitude, radius, LocalDateTime.parse(dateTime));
     }
 }

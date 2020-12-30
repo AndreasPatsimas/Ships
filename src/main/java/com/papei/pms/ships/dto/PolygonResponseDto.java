@@ -2,6 +2,8 @@ package com.papei.pms.ships.dto;
 
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -12,5 +14,5 @@ public class PolygonResponseDto {
     private String id;
     private String name;
     private AreaDto area;
-    private Long t;
+    private LocalDateTime dateTime;
 }

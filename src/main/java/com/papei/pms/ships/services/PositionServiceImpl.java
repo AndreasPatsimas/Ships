@@ -14,6 +14,9 @@ import org.springframework.data.geo.Metrics;
 import org.springframework.data.geo.Point;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -64,12 +67,13 @@ public class PositionServiceImpl implements PositionService {
                                                           Double latitude,
                                                           Integer maxDistance,
                                                           Integer minDistance,
-                                                          Long t) {
+                                                          LocalDateTime dateTime) {
 
         log.info("Fetch all positions near to our point[{}, {}] process begins", longitude, latitude);
 
         List<Position> positionList = positionRepository
-                .findPositionsNearGivenPoint(longitude, latitude, maxDistance, minDistance, t);
+                .findPositionsNearGivenPoint(longitude, latitude, maxDistance, minDistance,
+                        Date.from(dateTime.atZone(ZoneId.systemDefault()).toInstant()).getTime() / 1000);
 
         List<PositionDto> positions = convert(positionList);
 
@@ -79,7 +83,10 @@ public class PositionServiceImpl implements PositionService {
     }
 
     @Override
-    public List<PositionDto> fetchPositionsWithinCertainRadius(Double longitude, Double latitude, Double radius, Long t) {
+    public List<PositionDto> fetchPositionsWithinCertainRadius(Double longitude,
+                                                               Double latitude,
+                                                               Double radius,
+                                                               LocalDateTime dateTime) {
 
         log.info("Fetch all positions around center[{}, {}] with radius: {} process begins", longitude, latitude, radius);
 
@@ -87,7 +94,8 @@ public class PositionServiceImpl implements PositionService {
         Distance radiusCircle = new Distance(radius, Metrics.KILOMETERS);
         Circle circle = new Circle(center, radiusCircle);
 
-        List<Position> positionList = positionRepository.findByLocationWithinAndT(circle, t);
+        List<Position> positionList = positionRepository.findByLocationWithinAndT(circle,
+                Date.from(dateTime.atZone(ZoneId.systemDefault()).toInstant()).getTime() / 1000);
 
         List<PositionDto> positions = convert(positionList);
 

@@ -9,6 +9,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+
 @CrossOrigin(origins = "*")
 @RequestMapping(value = "/areas")
 @RestController
@@ -29,10 +31,10 @@ public class PolygonController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     boolean checkIfShipExistsInsidePolygon(@PathVariable("longitude") Double longitude,
                                            @PathVariable("latitude") Double latitude,
-                                           @PathVariable("dateTime") Long dateTime) {
+                                           @PathVariable("dateTime") String dateTime) {
 
         log.info("Check if ship with coordinates: [{}, {}] exists inside polygon", longitude, latitude);
 
-        return polygonService.checkIfShipExistsInsidePolygon(longitude, latitude, dateTime);
+        return polygonService.checkIfShipExistsInsidePolygon(longitude, latitude, LocalDateTime.parse(dateTime));
     }
 }

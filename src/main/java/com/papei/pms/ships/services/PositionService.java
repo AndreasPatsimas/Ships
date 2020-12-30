@@ -4,6 +4,7 @@ import com.papei.pms.ships.dto.PositionDto;
 import com.papei.pms.ships.enums.Flag;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -17,7 +18,10 @@ public interface PositionService {
                                                    Double latitude,
                                                    Integer maxDistance,
                                                    Integer minDistance,
-                                                   Long t);
+                                                   LocalDateTime dateTime);
 
-    List<PositionDto> fetchPositionsWithinCertainRadius(Double longitude, Double latitude, Double radius, Long t);
+    List<PositionDto> fetchPositionsWithinCertainRadius(Double longitude,
+                                                        Double latitude,
+                                                        Double radius,
+                                                        LocalDateTime dateTime);
 }

@@ -8,6 +8,8 @@ import org.junit.runners.MethodSorters;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.time.LocalDateTime;
+
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -26,7 +28,8 @@ public class PositionControllerTest extends BasicWiremockTest {
     private final Integer MAX_DISTANCE = 500;
     private final Integer MIN_DISTANCE = 0;
     private final Double RADIUS = 1.0;
-    private final Long T = 1443680752L;
+    private final LocalDateTime DATE_TIME = LocalDateTime.parse("2015-10-01T09:25:52");
+//    private final Long T = 1443680752L;
 
     @Test
     public void a_findBySourcemmsi() throws Exception {
@@ -48,8 +51,8 @@ public class PositionControllerTest extends BasicWiremockTest {
 
     @Test
     public void c_findPositionsNearGivenPoint() throws Exception {
-        this.mockMvc.perform(get("/positions/point/{longitude}/{latitude}/{maxDistance}/{minDistance}/{t}",
-                LONGITUDE, LATITUDE, MAX_DISTANCE, MIN_DISTANCE, T))
+        this.mockMvc.perform(get("/positions/point/{longitude}/{latitude}/{maxDistance}/{minDistance}/{dateTime}",
+                LONGITUDE, LATITUDE, MAX_DISTANCE, MIN_DISTANCE, DATE_TIME))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json;charset=UTF-8"));
@@ -57,8 +60,8 @@ public class PositionControllerTest extends BasicWiremockTest {
 
     @Test
     public void d_findPositionsWithinCertainRadius() throws Exception {
-        this.mockMvc.perform(get("/positions/circle/{longitude}/{latitude}/{radius}/{t}",
-                LONGITUDE, LATITUDE, RADIUS, T))
+        this.mockMvc.perform(get("/positions/circle/{longitude}/{latitude}/{radius}/{dateTime}",
+                LONGITUDE, LATITUDE, RADIUS, DATE_TIME))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json;charset=UTF-8"));

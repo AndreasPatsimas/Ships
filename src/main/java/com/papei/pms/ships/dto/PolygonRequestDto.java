@@ -2,6 +2,7 @@ package com.papei.pms.ships.dto;
 
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -16,5 +17,5 @@ public class PolygonRequestDto {
     private List<Double> p2;
     private List<Double> p3;
     private List<Double> p4;
-    private Long t;
+    private LocalDateTime dateTime;
 }

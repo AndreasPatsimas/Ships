@@ -7,6 +7,10 @@ import com.papei.pms.ships.dto.PolygonResponseDto;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.util.TimeZone;
+
 @Component
 public class PolygonToPolygonResponseDtoConverter implements Converter<Polygon, PolygonResponseDto> {
 
@@ -16,7 +20,9 @@ public class PolygonToPolygonResponseDtoConverter implements Converter<Polygon, 
                 .id(polygon.getId())
                 .name(polygon.getName())
                 .area(buildArea(polygon.getArea()))
-                .t(polygon.getT())
+                .dateTime(LocalDateTime
+                        .ofInstant(Instant.ofEpochSecond(polygon.getT()),
+                                TimeZone.getDefault().toZoneId()))
                 .build();
     }
 
