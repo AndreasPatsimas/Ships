@@ -1,9 +1,11 @@
 package com.papei.pms.ships.controllers;
 
+import com.papei.pms.ships.dto.CoordinateDto;
 import com.papei.pms.ships.dto.PositionDto;
 import com.papei.pms.ships.dto.PositionInsideBoxDto;
 import com.papei.pms.ships.enums.Flag;
 import com.papei.pms.ships.services.PositionService;
+import io.swagger.models.auth.In;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -98,5 +100,19 @@ public class PositionController {
         log.info("Fetch all positions inside box");
 
         return positionService.fetchPositionsInsideBox(positionInsideBoxDto);
+    }
+
+    @GetMapping(value = "/distance-join/{sourcemmsiOne}/{sourcemmsiTwo}/{value}/{dateTimeFrom}/{dateTimeTo}",
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    List<List<CoordinateDto>> findDistanceJoin(@PathVariable("sourcemmsiOne") Integer sourcemmsiOne,
+                                               @PathVariable("sourcemmsiTwo") Integer sourcemmsiTwo,
+                                               @PathVariable("value") Double value,
+                                               @PathVariable("dateTimeFrom") String dateTimeFrom,
+                                               @PathVariable("dateTimeTo") String dateTimeTo) {
+
+        log.info("Distance join for mmsi_one: {} and mmsi_two: {}", sourcemmsiOne, sourcemmsiTwo);
+
+        return positionService.fetchDistanceJoin(sourcemmsiOne, sourcemmsiTwo, value, LocalDateTime.parse(dateTimeFrom),
+                LocalDateTime.parse(dateTimeTo));
     }
 }

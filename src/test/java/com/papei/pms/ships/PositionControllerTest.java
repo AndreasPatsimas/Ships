@@ -10,7 +10,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -26,21 +28,25 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class PositionControllerTest extends BasicWiremockTest {
 
-    private final Integer SOURCEMMSI = 228051000;
+    private final Integer SOURCEMMSI_ONE = 228051000;
+    private final Integer SOURCEMMSI_TWO = 245257000;
+    private final Double VALUE = 2.0;
     private final Flag SHIP_FLAG = Flag.FRANCE;
     private final Double LONGITUDE = -4.4657183;
     private final Double LATITUDE = 48.38249;
     private final Integer MAX_DISTANCE = 500;
     private final Integer MIN_DISTANCE = 0;
     private final Double RADIUS = 1.0;
-    private final LocalDateTime DATE_TIME_FROM = LocalDateTime.parse("2015-10-01T08:25:52");
-    private final LocalDateTime DATE_TIME_TO = LocalDateTime.parse("2015-10-01T09:25:53");
-//    private final Long T = 1443680752L; //1443650405
+    private final LocalDateTime DATE_TIME_FROM = LocalDateTime.ofInstant(Instant.ofEpochMilli(1443650404000L), ZoneId.systemDefault());
+//            LocalDateTime.parse("2015-10-01T01:00:04");
+    private final LocalDateTime DATE_TIME_TO = LocalDateTime.ofInstant(Instant.ofEpochMilli(1443680753000L), ZoneId.systemDefault());
+        //LocalDateTime.parse("2015-10-01T09:25:53");
+//    private final Long T = 1443680753L; //1443650404
 
     @Test
     public void a_findBySourcemmsi() throws Exception {
         this.mockMvc.perform(get("/positions/{sourcemmsi}",
-                SOURCEMMSI))
+                SOURCEMMSI_ONE))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json;charset=UTF-8"));
@@ -98,5 +104,14 @@ public class PositionControllerTest extends BasicWiremockTest {
                 .content(asJsonString(positionInsideBoxDto)).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andDo(print());
+    }
+
+    @Test
+    public void g_findDistanceJoin() throws Exception {
+        this.mockMvc.perform(get("/positions/distance-join/{sourcemmsiOne}/{sourcemmsiTwo}/{value}/{dateTimeFrom}/{dateTimeTo}",
+                SOURCEMMSI_ONE, SOURCEMMSI_TWO, VALUE, DATE_TIME_FROM, DATE_TIME_TO))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/json;charset=UTF-8"));
     }
 }

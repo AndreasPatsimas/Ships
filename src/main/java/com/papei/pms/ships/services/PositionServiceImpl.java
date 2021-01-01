@@ -77,18 +77,20 @@ public class PositionServiceImpl implements PositionService {
                 Date.from(dateTimeFrom.atZone(ZoneId.systemDefault()).toInstant()).getTime() / 1000,
                 Date.from(dateTimeTo.atZone(ZoneId.systemDefault()).toInstant()).getTime() / 1000);
 
-        positionsOne.forEach(positionOne -> {
+        positionsOne.forEach(positionOne -> positionsTwo.forEach(positionTwo -> {
 
-            positionsTwo.forEach(positionTwo -> {
+            System.out.println(Point2D.distance(positionOne.getLocation().getCoordinates().getLon(), positionOne.getLocation().getCoordinates().getLat(),
+                    positionTwo.getLocation().getCoordinates().getLon(), positionTwo.getLocation().getCoordinates().getLat()));
 
-                if (Point2D.distance(positionOne.getLon(), positionOne.getLat(),
-                    positionTwo.getLon(), positionTwo.getLat()) <= value)
-                    distanceJoin.add(Stream
-                            .of(CoordinateDto.builder().lon(positionOne.getLon()).lat(positionOne.getLat()).build(),
-                                CoordinateDto.builder().lon(positionTwo.getLon()).lat(positionTwo.getLat()).build())
-                            .collect(Collectors.toList()));
-            });
-        });
+            if (Point2D.distance(positionOne.getLocation().getCoordinates().getLon(), positionOne.getLocation().getCoordinates().getLat(),
+                positionTwo.getLocation().getCoordinates().getLon(), positionTwo.getLocation().getCoordinates().getLat()) <= value)
+                distanceJoin.add(Stream
+                        .of(CoordinateDto.builder().lon(positionOne.getLocation().getCoordinates().getLon())
+                                        .lat(positionOne.getLocation().getCoordinates().getLat()).build(),
+                            CoordinateDto.builder().lon(positionTwo.getLocation().getCoordinates().getLon())
+                                    .lat(positionTwo.getLocation().getCoordinates().getLat()).build())
+                        .collect(Collectors.toList()));
+        }));
 
         log.info("Distance join for mmsi_one: {} and mmsi_two: {} process end", sourcemmsiOne, sourcemmsiTwo);
 
