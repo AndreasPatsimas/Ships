@@ -1,10 +1,15 @@
 package com.papei.pms.ships.controllers;
 
 import com.papei.pms.ships.dto.PositionDto;
+import com.papei.pms.ships.dto.PositionInsideBoxDto;
 import com.papei.pms.ships.enums.Flag;
 import com.papei.pms.ships.services.PositionService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
@@ -53,6 +58,26 @@ public class PositionController {
                 LocalDateTime.parse(dateTimeFrom), LocalDateTime.parse(dateTimeTo));
     }
 
+    @GetMapping(value = "/k-nn/{longitude}/{latitude}/{dateTimeFrom}/{dateTimeTo}",
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    Page<PositionDto> knn(@RequestParam Integer page,
+                         @RequestParam Integer pageSize,
+                         @RequestParam String sortBy,
+                         @RequestParam String sortDirection,
+                         @PathVariable("longitude") Double longitude,
+                         @PathVariable("latitude") Double latitude,
+                         @PathVariable("dateTimeFrom") String dateTimeFrom,
+                         @PathVariable("dateTimeTo") String dateTimeTo) {
+
+        log.info("K-nn near to our point[{}, {}]", longitude, latitude);
+
+        Sort sort = Sort.by(Sort.Direction.fromString(sortDirection), sortBy);
+        Pageable pageable = PageRequest.of(page, pageSize, sort);
+
+        return positionService.knn(longitude, latitude,
+                LocalDateTime.parse(dateTimeFrom), LocalDateTime.parse(dateTimeTo), pageable);
+    }
+
     @GetMapping(value = "/circle/{longitude}/{latitude}/{radius}/{dateTimeFrom}/{dateTimeTo}",
             produces = MediaType.APPLICATION_JSON_VALUE)
     List<PositionDto> findPositionsWithinCertainRadius(@PathVariable("longitude") Double longitude,
@@ -65,5 +90,13 @@ public class PositionController {
 
         return positionService.fetchPositionsWithinCertainRadius(longitude, latitude, radius, LocalDateTime.parse(dateTimeFrom),
                 LocalDateTime.parse(dateTimeTo));
+    }
+
+    @PostMapping(value = "/box", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    List<PositionDto> findPositionsInsideBox(@RequestBody PositionInsideBoxDto positionInsideBoxDto) {
+
+        log.info("Fetch all positions inside box");
+
+        return positionService.fetchPositionsInsideBox(positionInsideBoxDto);
     }
 }
