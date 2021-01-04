@@ -5,7 +5,6 @@ import com.papei.pms.ships.dto.PositionDto;
 import com.papei.pms.ships.dto.PositionInsideBoxDto;
 import com.papei.pms.ships.enums.Flag;
 import com.papei.pms.ships.services.PositionService;
-import io.swagger.models.auth.In;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -45,7 +44,7 @@ public class PositionController {
         return positionService.fetchByShipFlag(shipFlag);
     }
 
-    @GetMapping(value = "/point/{longitude}/{latitude}/{maxDistance}/{minDistance}/{dateTimeFrom}/{dateTimeTo}",
+    @GetMapping(value = "/spatio-temporal/point/{longitude}/{latitude}/{maxDistance}/{minDistance}/{dateTimeFrom}/{dateTimeTo}",
             produces = MediaType.APPLICATION_JSON_VALUE)
     List<PositionDto> findPositionsNearGivenPoint(@PathVariable("longitude") Double longitude,
                                                   @PathVariable("latitude") Double latitude,
@@ -60,7 +59,19 @@ public class PositionController {
                 LocalDateTime.parse(dateTimeFrom), LocalDateTime.parse(dateTimeTo));
     }
 
-    @GetMapping(value = "/k-nn/{longitude}/{latitude}/{dateTimeFrom}/{dateTimeTo}",
+    @GetMapping(value = "/spatial/point/{longitude}/{latitude}/{maxDistance}/{minDistance}",
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    List<PositionDto> findPositionsNearGivenPoint(@PathVariable("longitude") Double longitude,
+                                                  @PathVariable("latitude") Double latitude,
+                                                  @PathVariable("maxDistance") Integer maxDistance,
+                                                  @PathVariable("minDistance") Integer minDistance) {
+
+        log.info("Fetch all positions near to our point[{}, {}]", longitude, latitude);
+
+        return positionService.fetchPositionsNearGivenPoint(longitude, latitude, maxDistance, minDistance);
+    }
+
+    @GetMapping(value = "/spatio-temporal/k-nn/{longitude}/{latitude}/{dateTimeFrom}/{dateTimeTo}",
             produces = MediaType.APPLICATION_JSON_VALUE)
     Page<PositionDto> knn(@RequestParam Integer page,
                          @RequestParam Integer pageSize,
@@ -80,7 +91,24 @@ public class PositionController {
                 LocalDateTime.parse(dateTimeFrom), LocalDateTime.parse(dateTimeTo), pageable);
     }
 
-    @GetMapping(value = "/circle/{longitude}/{latitude}/{radius}/{dateTimeFrom}/{dateTimeTo}",
+    @GetMapping(value = "/spatial/k-nn/{longitude}/{latitude}",
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    Page<PositionDto> knn(@RequestParam Integer page,
+                         @RequestParam Integer pageSize,
+                         @RequestParam String sortBy,
+                         @RequestParam String sortDirection,
+                         @PathVariable("longitude") Double longitude,
+                         @PathVariable("latitude") Double latitude) {
+
+        log.info("K-nn near to our point[{}, {}]", longitude, latitude);
+
+        Sort sort = Sort.by(Sort.Direction.fromString(sortDirection), sortBy);
+        Pageable pageable = PageRequest.of(page, pageSize, sort);
+
+        return positionService.knn(longitude, latitude, pageable);
+    }
+
+    @GetMapping(value = "/spatio-temporal/circle/{longitude}/{latitude}/{radius}/{dateTimeFrom}/{dateTimeTo}",
             produces = MediaType.APPLICATION_JSON_VALUE)
     List<PositionDto> findPositionsWithinCertainRadius(@PathVariable("longitude") Double longitude,
                                                        @PathVariable("latitude") Double latitude,
@@ -94,6 +122,17 @@ public class PositionController {
                 LocalDateTime.parse(dateTimeTo));
     }
 
+    @GetMapping(value = "/spatial/circle/{longitude}/{latitude}/{radius}",
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    List<PositionDto> findPositionsWithinCertainRadius(@PathVariable("longitude") Double longitude,
+                                                       @PathVariable("latitude") Double latitude,
+                                                       @PathVariable("radius") Double radius) {
+
+        log.info("Fetch all positions around center[{}, {}] with radius: {}", longitude, latitude, radius);
+
+        return positionService.fetchPositionsWithinCertainRadius(longitude, latitude, radius);
+    }
+
     @PostMapping(value = "/box", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     List<PositionDto> findPositionsInsideBox(@RequestBody PositionInsideBoxDto positionInsideBoxDto) {
 
@@ -102,7 +141,7 @@ public class PositionController {
         return positionService.fetchPositionsInsideBox(positionInsideBoxDto);
     }
 
-    @GetMapping(value = "/distance-join/{sourcemmsiOne}/{sourcemmsiTwo}/{value}/{dateTimeFrom}/{dateTimeTo}",
+    @GetMapping(value = "/spatio-temporal/distance-join/{sourcemmsiOne}/{sourcemmsiTwo}/{value}/{dateTimeFrom}/{dateTimeTo}",
             produces = MediaType.APPLICATION_JSON_VALUE)
     List<List<CoordinateDto>> findDistanceJoin(@PathVariable("sourcemmsiOne") Integer sourcemmsiOne,
                                                @PathVariable("sourcemmsiTwo") Integer sourcemmsiTwo,
@@ -114,5 +153,16 @@ public class PositionController {
 
         return positionService.fetchDistanceJoin(sourcemmsiOne, sourcemmsiTwo, value, LocalDateTime.parse(dateTimeFrom),
                 LocalDateTime.parse(dateTimeTo));
+    }
+
+    @GetMapping(value = "/spatial/distance-join/{sourcemmsiOne}/{sourcemmsiTwo}/{value}",
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    List<List<CoordinateDto>> findDistanceJoin(@PathVariable("sourcemmsiOne") Integer sourcemmsiOne,
+                                               @PathVariable("sourcemmsiTwo") Integer sourcemmsiTwo,
+                                               @PathVariable("value") Double value) {
+
+        log.info("Distance join for mmsi_one: {} and mmsi_two: {}", sourcemmsiOne, sourcemmsiTwo);
+
+        return positionService.fetchDistanceJoin(sourcemmsiOne, sourcemmsiTwo, value);
     }
 }

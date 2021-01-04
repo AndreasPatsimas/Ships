@@ -22,6 +22,10 @@ public interface PositionService {
                                                 LocalDateTime dateTimeFrom,
                                                 LocalDateTime dateTimeTo);
 
+    List<List<CoordinateDto>> fetchDistanceJoin(Integer sourcemmsiOne,
+                                                Integer sourcemmsiTwo,
+                                                Double value);
+
     List<PositionDto> fetchByShipFlag(Flag shipFlag);
 
     List<PositionDto> fetchPositionsNearGivenPoint(Double longitude,
@@ -31,17 +35,26 @@ public interface PositionService {
                                                    LocalDateTime dateTimeFrom,
                                                    LocalDateTime dateTimeTo);
 
+    List<PositionDto> fetchPositionsNearGivenPoint(Double longitude,
+                                                   Double latitude,
+                                                   Integer maxDistance,
+                                                   Integer minDistance);
+
     Page<PositionDto> knn(Double longitude,
                           Double latitude,
                           LocalDateTime dateTimeFrom,
                           LocalDateTime dateTimeTo,
                           Pageable pageable);
 
+    Page<PositionDto> knn(Double longitude, Double latitude, Pageable pageable);
+
     List<PositionDto> fetchPositionsWithinCertainRadius(Double longitude,
                                                         Double latitude,
                                                         Double radius,
                                                         LocalDateTime dateTimeFrom,
                                                         LocalDateTime dateTimeTo);
+
+    List<PositionDto> fetchPositionsWithinCertainRadius(Double longitude, Double latitude, Double radius);
 
     List<PositionDto> fetchPositionsInsideBox(PositionInsideBoxDto positionInsideBoxDto);
 }

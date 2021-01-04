@@ -79,9 +79,6 @@ public class PositionServiceImpl implements PositionService {
 
         positionsOne.forEach(positionOne -> positionsTwo.forEach(positionTwo -> {
 
-            System.out.println(Point2D.distance(positionOne.getLocation().getCoordinates().getLon(), positionOne.getLocation().getCoordinates().getLat(),
-                    positionTwo.getLocation().getCoordinates().getLon(), positionTwo.getLocation().getCoordinates().getLat()));
-
             if (Point2D.distance(positionOne.getLocation().getCoordinates().getLon(), positionOne.getLocation().getCoordinates().getLat(),
                 positionTwo.getLocation().getCoordinates().getLon(), positionTwo.getLocation().getCoordinates().getLat()) <= value)
                 distanceJoin.add(Stream
@@ -89,6 +86,34 @@ public class PositionServiceImpl implements PositionService {
                                         .lat(positionOne.getLocation().getCoordinates().getLat()).build(),
                             CoordinateDto.builder().lon(positionTwo.getLocation().getCoordinates().getLon())
                                     .lat(positionTwo.getLocation().getCoordinates().getLat()).build())
+                        .collect(Collectors.toList()));
+        }));
+
+        log.info("Distance join for mmsi_one: {} and mmsi_two: {} process end", sourcemmsiOne, sourcemmsiTwo);
+
+        return distanceJoin;
+    }
+
+    @Override
+    public List<List<CoordinateDto>> fetchDistanceJoin(Integer sourcemmsiOne, Integer sourcemmsiTwo, Double value) {
+
+        log.info("Distance join for mmsi_one: {} and mmsi_two: {} process begins", sourcemmsiOne, sourcemmsiTwo);
+
+        List<List<CoordinateDto>> distanceJoin = new ArrayList<>();
+
+        List<Position> positionsOne = positionRepository.findPositionByMmsi(sourcemmsiOne);
+
+        List<Position> positionsTwo = positionRepository.findPositionByMmsi(sourcemmsiTwo);
+
+        positionsOne.forEach(positionOne -> positionsTwo.forEach(positionTwo -> {
+
+            if (Point2D.distance(positionOne.getLocation().getCoordinates().getLon(), positionOne.getLocation().getCoordinates().getLat(),
+                    positionTwo.getLocation().getCoordinates().getLon(), positionTwo.getLocation().getCoordinates().getLat()) <= value)
+                distanceJoin.add(Stream
+                        .of(CoordinateDto.builder().lon(positionOne.getLocation().getCoordinates().getLon())
+                                        .lat(positionOne.getLocation().getCoordinates().getLat()).build(),
+                                CoordinateDto.builder().lon(positionTwo.getLocation().getCoordinates().getLon())
+                                        .lat(positionTwo.getLocation().getCoordinates().getLat()).build())
                         .collect(Collectors.toList()));
         }));
 
@@ -135,6 +160,20 @@ public class PositionServiceImpl implements PositionService {
     }
 
     @Override
+    public List<PositionDto> fetchPositionsNearGivenPoint(Double longitude, Double latitude, Integer maxDistance, Integer minDistance) {
+        log.info("Fetch all positions near to our point[{}, {}] process begins", longitude, latitude);
+
+        List<Position> positionList = positionRepository
+                .findPositionsNearGivenPoint(longitude, latitude, maxDistance, minDistance, SORT_BY);
+
+        List<PositionDto> positions = convert(positionList);
+
+        log.info("Fetch all positions near to our point[{}, {}] process end", longitude, latitude);
+
+        return positions;
+    }
+
+    @Override
     public Page<PositionDto> knn(Double longitude,
                                  Double latitude,
                                  LocalDateTime dateTimeFrom,
@@ -147,6 +186,15 @@ public class PositionServiceImpl implements PositionService {
                 Date.from(dateTimeFrom.atZone(ZoneId.systemDefault()).toInstant()).getTime() / 1000,
                 Date.from(dateTimeTo.atZone(ZoneId.systemDefault()).toInstant()).getTime() / 1000,
                 pageable);
+
+        return getPositionDtosPage(pageable, positions);
+    }
+
+    @Override
+    public Page<PositionDto> knn(Double longitude, Double latitude, Pageable pageable) {
+        log.info("K-nn near to our point[{}, {}] process begins", longitude, latitude);
+
+        Page<Position> positions = positionRepository.knn(longitude, latitude, pageable);
 
         return getPositionDtosPage(pageable, positions);
     }
@@ -175,15 +223,39 @@ public class PositionServiceImpl implements PositionService {
     }
 
     @Override
+    public List<PositionDto> fetchPositionsWithinCertainRadius(Double longitude, Double latitude, Double radius) {
+        log.info("Fetch all positions around center[{}, {}] with radius: {} process begins", longitude, latitude, radius);
+
+        Point center = new Point(longitude, latitude);
+        Distance radiusCircle = new Distance(radius, Metrics.KILOMETERS);
+        Circle circle = new Circle(center, radiusCircle);
+
+        List<Position> positionList = positionRepository.findByLocationWithin(circle);
+
+        List<PositionDto> positions = convert(positionList);
+
+        log.info("Fetch all positions around center[{}, {}] with radius: {} process end", longitude, latitude, radius);
+
+        return positions;
+    }
+
+    @Override
     public List<PositionDto> fetchPositionsInsideBox(PositionInsideBoxDto positionInsideBoxDto) {
 
         log.info("Fetch all positions inside box process begins");
 
-        List<Position> positionList = positionRepository.findPositionsInsideBox(positionInsideBoxDto.getCoordinates1(),
-                positionInsideBoxDto.getCoordinates2(), positionInsideBoxDto.getCoordinates3(),
-                positionInsideBoxDto.getCoordinates4(), positionInsideBoxDto.getCoordinates1(),
-                Date.from(positionInsideBoxDto.getDateTimeFrom().atZone(ZoneId.systemDefault()).toInstant()).getTime() / 1000,
-                Date.from(positionInsideBoxDto.getDateTimeTo().atZone(ZoneId.systemDefault()).toInstant()).getTime() / 1000);
+        List<Position> positionList;
+
+        if (!ObjectUtils.isEmpty(positionInsideBoxDto.getDateTimeFrom()) && !ObjectUtils.isEmpty(positionInsideBoxDto.getDateTimeTo()))
+            positionList = positionRepository.findPositionsInsideBox(positionInsideBoxDto.getCoordinates1(),
+                    positionInsideBoxDto.getCoordinates2(), positionInsideBoxDto.getCoordinates3(),
+                    positionInsideBoxDto.getCoordinates4(), positionInsideBoxDto.getCoordinates1(),
+                    Date.from(positionInsideBoxDto.getDateTimeFrom().atZone(ZoneId.systemDefault()).toInstant()).getTime() / 1000,
+                    Date.from(positionInsideBoxDto.getDateTimeTo().atZone(ZoneId.systemDefault()).toInstant()).getTime() / 1000);
+        else
+            positionList = positionRepository.findPositionsInsideBox(positionInsideBoxDto.getCoordinates1(),
+                    positionInsideBoxDto.getCoordinates2(), positionInsideBoxDto.getCoordinates3(),
+                    positionInsideBoxDto.getCoordinates4(), positionInsideBoxDto.getCoordinates1());
 
         List<PositionDto> positions = convert(positionList);
 

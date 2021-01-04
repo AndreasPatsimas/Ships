@@ -14,4 +14,6 @@ public interface PolygonService {
                                            Double latitude,
                                            LocalDateTime dateTimeFrom,
                                            LocalDateTime dateTimeTo);
+
+    boolean checkIfShipExistsInsidePolygon(Double longitude, Double latitude);
 }

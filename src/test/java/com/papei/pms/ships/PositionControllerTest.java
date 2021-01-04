@@ -63,7 +63,7 @@ public class PositionControllerTest extends BasicWiremockTest {
 
     @Test
     public void c_findPositionsNearGivenPoint() throws Exception {
-        this.mockMvc.perform(get("/positions/point/{longitude}/{latitude}/{maxDistance}/{minDistance}/{dateTimeFrom}/{dateTimeTo}",
+        this.mockMvc.perform(get("/positions/spatio-temporal/point/{longitude}/{latitude}/{maxDistance}/{minDistance}/{dateTimeFrom}/{dateTimeTo}",
                 LONGITUDE, LATITUDE, MAX_DISTANCE, MIN_DISTANCE, DATE_TIME_FROM, DATE_TIME_TO))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -71,8 +71,17 @@ public class PositionControllerTest extends BasicWiremockTest {
     }
 
     @Test
-    public void d_knn() throws Exception {
-        this.mockMvc.perform(get("/positions/k-nn/{longitude}/{latitude}/{dateTimeFrom}/{dateTimeTo}?sortBy=t&sortDirection=ASC&page=0&pageSize=10",
+    public void d_findPositionsNearGivenPoint() throws Exception {
+        this.mockMvc.perform(get("/positions/spatial/point/{longitude}/{latitude}/{maxDistance}/{minDistance}",
+                LONGITUDE, LATITUDE, MAX_DISTANCE, MIN_DISTANCE))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/json;charset=UTF-8"));
+    }
+
+    @Test
+    public void e_knn() throws Exception {
+        this.mockMvc.perform(get("/positions/spatio-temporal/k-nn/{longitude}/{latitude}/{dateTimeFrom}/{dateTimeTo}?sortBy=t&sortDirection=ASC&page=0&pageSize=10",
                 LONGITUDE, LATITUDE, DATE_TIME_FROM, DATE_TIME_TO))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -80,8 +89,17 @@ public class PositionControllerTest extends BasicWiremockTest {
     }
 
     @Test
-    public void e_findPositionsWithinCertainRadius() throws Exception {
-        this.mockMvc.perform(get("/positions/circle/{longitude}/{latitude}/{radius}/{dateTimeFrom}/{dateTimeTo}",
+    public void f_knn() throws Exception {
+        this.mockMvc.perform(get("/positions/spatial/k-nn/{longitude}/{latitude}?sortBy=t&sortDirection=ASC&page=0&pageSize=10",
+                LONGITUDE, LATITUDE))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/json;charset=UTF-8"));
+    }
+
+    @Test
+    public void g_findPositionsWithinCertainRadius() throws Exception {
+        this.mockMvc.perform(get("/positions/spatial/circle/{longitude}/{latitude}/{radius}",
                 LONGITUDE, LATITUDE, RADIUS, DATE_TIME_FROM, DATE_TIME_TO))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -89,7 +107,7 @@ public class PositionControllerTest extends BasicWiremockTest {
     }
 
     @Test
-    public void f_findPositionsInsideBox() throws Exception {
+    public void h_findPositionsInsideBox() throws Exception {
 
         PositionInsideBoxDto positionInsideBoxDto = PositionInsideBoxDto.builder()
                 .coordinates1(Stream.of(-4.49544, 48.383663).collect(Collectors.toList()))
@@ -107,9 +125,34 @@ public class PositionControllerTest extends BasicWiremockTest {
     }
 
     @Test
-    public void g_findDistanceJoin() throws Exception {
-        this.mockMvc.perform(get("/positions/distance-join/{sourcemmsiOne}/{sourcemmsiTwo}/{value}/{dateTimeFrom}/{dateTimeTo}",
+    public void i_findPositionsInsideBox() throws Exception {
+
+        PositionInsideBoxDto positionInsideBoxDto = PositionInsideBoxDto.builder()
+                .coordinates1(Stream.of(-4.49544, 48.383663).collect(Collectors.toList()))
+                .coordinates2(Stream.of(-3.49544, 48.383663).collect(Collectors.toList()))
+                .coordinates3(Stream.of(-3.49544, 47.383663).collect(Collectors.toList()))
+                .coordinates4(Stream.of(-4.49544, 47.383663).collect(Collectors.toList()))
+                .build();
+
+        this.mockMvc.perform(post("/positions/box")
+                .content(asJsonString(positionInsideBoxDto)).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(print());
+    }
+
+    @Test
+    public void j_findDistanceJoin() throws Exception {
+        this.mockMvc.perform(get("/positions/spatio-temporal/distance-join/{sourcemmsiOne}/{sourcemmsiTwo}/{value}/{dateTimeFrom}/{dateTimeTo}",
                 SOURCEMMSI_ONE, SOURCEMMSI_TWO, VALUE, DATE_TIME_FROM, DATE_TIME_TO))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/json;charset=UTF-8"));
+    }
+
+    @Test
+    public void k_findDistanceJoin() throws Exception {
+        this.mockMvc.perform(get("/positions/spatial/distance-join/{sourcemmsiOne}/{sourcemmsiTwo}/{value}",
+                SOURCEMMSI_ONE, SOURCEMMSI_TWO, VALUE))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json;charset=UTF-8"));

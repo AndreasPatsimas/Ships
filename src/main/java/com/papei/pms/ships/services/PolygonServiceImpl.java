@@ -58,4 +58,19 @@ public class PolygonServiceImpl implements PolygonService {
 
         return false;
     }
+
+    @Override
+    public boolean checkIfShipExistsInsidePolygon(Double longitude, Double latitude) {
+
+        log.info("Check if ship with coordinates: [{}, {}] exists inside polygon process begins", longitude, latitude);
+
+        Optional<Polygon> polygon = polygonRepository.checkIfShipExistsInsidePolygon(longitude, latitude);
+
+        if (polygon.isPresent())
+            return true;
+
+        log.info("Check if ship with coordinates: [{}, {}] exists inside polygon process end", longitude, latitude);
+
+        return false;
+    }
 }

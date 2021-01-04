@@ -54,8 +54,17 @@ public class PolygonControllerTest extends BasicWiremockTest {
 
     @Test
     public void b_checkIfShipExistsInsidePolygon() throws Exception {
-        this.mockMvc.perform(get("/areas/{longitude}/{latitude}/{dateTimeFrom}/{dateTimeTo}",
+        this.mockMvc.perform(get("/areas/spatio-temporal/{longitude}/{latitude}/{dateTimeFrom}/{dateTimeTo}",
                 LONGITUDE, LATITUDE, DATE_TIME_FROM, DATE_TIME_TO))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/json;charset=UTF-8"));
+    }
+
+    @Test
+    public void c_checkIfShipExistsInsidePolygonSpatial() throws Exception {
+        this.mockMvc.perform(get("/areas/spatial/{longitude}/{latitude}",
+                LONGITUDE, LATITUDE))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json;charset=UTF-8"));
