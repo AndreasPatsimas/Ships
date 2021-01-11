@@ -81,7 +81,7 @@ public class PositionControllerTest extends BasicWiremockTest {
 
     @Test
     public void e_knn() throws Exception {
-        this.mockMvc.perform(get("/positions/spatio-temporal/k-nn/{longitude}/{latitude}/{dateTimeFrom}/{dateTimeTo}?sortBy=t&sortDirection=ASC&page=0&pageSize=10",
+        this.mockMvc.perform(get("/positions/spatio-temporal/k-nn/{longitude}/{latitude}/{dateTimeFrom}/{dateTimeTo}?page=0&pageSize=10",
                 LONGITUDE, LATITUDE, DATE_TIME_FROM, DATE_TIME_TO))
                 .andDo(print())
                 .andExpect(status().isOk())
