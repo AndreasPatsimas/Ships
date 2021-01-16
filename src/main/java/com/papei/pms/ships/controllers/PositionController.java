@@ -167,15 +167,4 @@ public class PositionController {
         return positionService.fetchDistanceJoin(sourcemmsiOne, sourcemmsiTwo, value, LocalDateTime.parse(dateTimeFrom),
                 LocalDateTime.parse(dateTimeTo));
     }
-
-    @GetMapping(value = "/spatial/distance-join/{sourcemmsiOne}/{sourcemmsiTwo}/{value}",
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    List<List<CoordinateDto>> findDistanceJoin(@PathVariable("sourcemmsiOne") Integer sourcemmsiOne,
-                                               @PathVariable("sourcemmsiTwo") Integer sourcemmsiTwo,
-                                               @PathVariable("value") Double value) {
-
-        log.info("Distance join for mmsi_one: {} and mmsi_two: {}", sourcemmsiOne, sourcemmsiTwo);
-
-        return positionService.fetchDistanceJoin(sourcemmsiOne, sourcemmsiTwo, value);
-    }
 }

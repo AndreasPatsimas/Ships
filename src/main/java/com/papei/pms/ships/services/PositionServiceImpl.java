@@ -88,9 +88,6 @@ public class PositionServiceImpl implements PositionService {
 
                 Position positionTwo = posTwo.get(0);
 
-                System.out.println(MathCalculations.dist(positionOne.getLocation().getCoordinates().getLon(), positionOne.getLocation().getCoordinates().getLat(),
-                        positionTwo.getLocation().getCoordinates().getLon(), positionTwo.getLocation().getCoordinates().getLat()));
-
                 if (MathCalculations.distance(positionOne.getLocation().getCoordinates().getLon(), positionOne.getLocation().getCoordinates().getLat(),
                         positionTwo.getLocation().getCoordinates().getLon(), positionTwo.getLocation().getCoordinates().getLat()) <= value)
                     distanceJoin.add(Stream

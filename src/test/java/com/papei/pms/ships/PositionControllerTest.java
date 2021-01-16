@@ -30,7 +30,7 @@ public class PositionControllerTest extends BasicWiremockTest {
 
     private final Integer SOURCEMMSI_ONE = 228051000;
     private final Integer SOURCEMMSI_TWO = 245257000;
-    private final Double VALUE = 7785996.0;
+    private final Double VALUE = 12.0;
     private final Flag SHIP_FLAG = Flag.FRANCE;
     private final Double LONGITUDE = -4.4657183;
     private final Double LATITUDE = 48.38249;
@@ -144,15 +144,6 @@ public class PositionControllerTest extends BasicWiremockTest {
     public void j_findDistanceJoin() throws Exception {
         this.mockMvc.perform(get("/positions/spatio-temporal/distance-join/{sourcemmsiOne}/{sourcemmsiTwo}/{value}/{dateTimeFrom}/{dateTimeTo}",
                 SOURCEMMSI_ONE, SOURCEMMSI_TWO, VALUE, DATE_TIME_FROM, DATE_TIME_TO))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentType("application/json;charset=UTF-8"));
-    }
-
-    @Test
-    public void k_findDistanceJoin() throws Exception {
-        this.mockMvc.perform(get("/positions/spatial/distance-join/{sourcemmsiOne}/{sourcemmsiTwo}/{value}",
-                SOURCEMMSI_ONE, SOURCEMMSI_TWO, VALUE))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json;charset=UTF-8"));
