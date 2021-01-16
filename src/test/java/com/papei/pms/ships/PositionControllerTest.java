@@ -30,7 +30,7 @@ public class PositionControllerTest extends BasicWiremockTest {
 
     private final Integer SOURCEMMSI_ONE = 228051000;
     private final Integer SOURCEMMSI_TWO = 245257000;
-    private final Double VALUE = 2.0;
+    private final Double VALUE = 7785996.0;
     private final Flag SHIP_FLAG = Flag.FRANCE;
     private final Double LONGITUDE = -4.4657183;
     private final Double LATITUDE = 48.38249;

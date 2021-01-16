@@ -7,6 +7,7 @@ import com.papei.pms.ships.dto.PositionDto;
 import com.papei.pms.ships.dto.PositionInsideBoxDto;
 import com.papei.pms.ships.enums.Flag;
 import com.papei.pms.ships.repositories.PositionRepository;
+import com.papei.pms.ships.utils.MathCalculations;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
@@ -77,17 +78,29 @@ public class PositionServiceImpl implements PositionService {
                 Date.from(dateTimeFrom.atZone(ZoneId.systemDefault()).toInstant()).getTime() / 1000,
                 Date.from(dateTimeTo.atZone(ZoneId.systemDefault()).toInstant()).getTime() / 1000);
 
-        positionsOne.forEach(positionOne -> positionsTwo.forEach(positionTwo -> {
+        positionsOne.forEach(positionOne -> {
 
-            if (Point2D.distance(positionOne.getLocation().getCoordinates().getLon(), positionOne.getLocation().getCoordinates().getLat(),
-                positionTwo.getLocation().getCoordinates().getLon(), positionTwo.getLocation().getCoordinates().getLat()) <= value)
-                distanceJoin.add(Stream
-                        .of(CoordinateDto.builder().lon(positionOne.getLocation().getCoordinates().getLon())
-                                        .lat(positionOne.getLocation().getCoordinates().getLat()).build(),
-                            CoordinateDto.builder().lon(positionTwo.getLocation().getCoordinates().getLon())
-                                    .lat(positionTwo.getLocation().getCoordinates().getLat()).build())
-                        .collect(Collectors.toList()));
-        }));
+            List<Position> posTwo = positionsTwo.stream()
+                    .filter(pos -> pos.getT().equals(positionOne.getT()))
+                    .collect(Collectors.toList());
+
+            if (!posTwo.isEmpty()){
+
+                Position positionTwo = posTwo.get(0);
+
+                System.out.println(MathCalculations.dist(positionOne.getLocation().getCoordinates().getLon(), positionOne.getLocation().getCoordinates().getLat(),
+                        positionTwo.getLocation().getCoordinates().getLon(), positionTwo.getLocation().getCoordinates().getLat()));
+
+                if (MathCalculations.distance(positionOne.getLocation().getCoordinates().getLon(), positionOne.getLocation().getCoordinates().getLat(),
+                        positionTwo.getLocation().getCoordinates().getLon(), positionTwo.getLocation().getCoordinates().getLat()) <= value)
+                    distanceJoin.add(Stream
+                            .of(CoordinateDto.builder().lon(positionOne.getLocation().getCoordinates().getLon())
+                                            .lat(positionOne.getLocation().getCoordinates().getLat()).build(),
+                                    CoordinateDto.builder().lon(positionTwo.getLocation().getCoordinates().getLon())
+                                            .lat(positionTwo.getLocation().getCoordinates().getLat()).build())
+                            .collect(Collectors.toList()));
+            }
+        });
 
         log.info("Distance join for mmsi_one: {} and mmsi_two: {} process end", sourcemmsiOne, sourcemmsiTwo);
 
