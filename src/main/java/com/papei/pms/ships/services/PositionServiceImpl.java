@@ -2,6 +2,7 @@ package com.papei.pms.ships.services;
 
 
 import com.papei.pms.ships.domain.Position;
+import com.papei.pms.ships.domain.PositionAggregation;
 import com.papei.pms.ships.dto.CoordinateDto;
 import com.papei.pms.ships.dto.PositionDto;
 import com.papei.pms.ships.dto.PositionInsideBoxDto;
@@ -16,6 +17,12 @@ import org.springframework.data.geo.Circle;
 import org.springframework.data.geo.Distance;
 import org.springframework.data.geo.Metrics;
 import org.springframework.data.geo.Point;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.GroupOperation;
+import org.springframework.data.mongodb.core.aggregation.MatchOperation;
+import org.springframework.data.mongodb.core.aggregation.SortOperation;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
@@ -29,6 +36,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
+
 @Service
 @Slf4j
 public class PositionServiceImpl implements PositionService {
@@ -37,11 +46,16 @@ public class PositionServiceImpl implements PositionService {
 
     private PositionRepository positionRepository;
 
+    private MongoTemplate mongoTemplate;
+
     private ConversionService conversionService;
 
     @Autowired
-    public PositionServiceImpl(PositionRepository positionRepository, ConversionService conversionService) {
+    public PositionServiceImpl(PositionRepository positionRepository,
+                               MongoTemplate mongoTemplate,
+                               ConversionService conversionService) {
         this.positionRepository = positionRepository;
+        this.mongoTemplate = mongoTemplate;
         this.conversionService = conversionService;
     }
 
@@ -142,6 +156,28 @@ public class PositionServiceImpl implements PositionService {
         List<PositionDto> positions = convert(positionList);
 
         log.info("Fetch all positions by flag {} process end", shipFlag.code());
+
+        return positions;
+    }
+
+    @Override
+    public List<PositionAggregation> fetchByShipFlagGroupBySourceMmsi(Flag shipFlag) {
+
+        log.info("Fetch trajectories by flag, group by sourcemmsi {} process begins", shipFlag.code());
+
+        MatchOperation matchStage = Aggregation.match(new Criteria("shipFlag").is(shipFlag.code()));
+
+        SortOperation sortByTimeAsc = sort(Sort.by(Sort.Direction.ASC, "t"));
+
+        GroupOperation locationGroupOperation = group("sourcemmsi")
+                .push("location").as("locations");
+
+        Aggregation aggregation = newAggregation(matchStage, sortByTimeAsc, locationGroupOperation);
+
+        List<PositionAggregation> positions = mongoTemplate
+                .aggregate(aggregation, "positions", PositionAggregation.class).getMappedResults();
+
+        log.info("Fetch trajectories by flag, group by sourcemmsi {} process end", shipFlag.code());
 
         return positions;
     }

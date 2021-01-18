@@ -9,6 +9,6 @@ import lombok.*;
 @ToString
 public class Location {
 
-    private String type;
     private Coordinate coordinates;
+    private String type;
 }

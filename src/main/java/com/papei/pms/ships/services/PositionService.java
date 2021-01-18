@@ -1,5 +1,6 @@
 package com.papei.pms.ships.services;
 
+import com.papei.pms.ships.domain.PositionAggregation;
 import com.papei.pms.ships.dto.CoordinateDto;
 import com.papei.pms.ships.dto.PositionDto;
 import com.papei.pms.ships.dto.PositionInsideBoxDto;
@@ -27,6 +28,8 @@ public interface PositionService {
                                                 Double value);
 
     List<PositionDto> fetchByShipFlag(Flag shipFlag);
+
+    List<PositionAggregation> fetchByShipFlagGroupBySourceMmsi(Flag shipFlag);
 
     List<PositionDto> fetchPositionsNearGivenPoint(Double longitude,
                                                    Double latitude,

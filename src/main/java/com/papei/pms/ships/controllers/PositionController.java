@@ -1,5 +1,6 @@
 package com.papei.pms.ships.controllers;
 
+import com.papei.pms.ships.domain.PositionAggregation;
 import com.papei.pms.ships.dto.CoordinateDto;
 import com.papei.pms.ships.dto.PositionDto;
 import com.papei.pms.ships.dto.PositionInsideBoxDto;
@@ -38,11 +39,11 @@ public class PositionController {
 
     @GetMapping(value = "/flag/{shipFlag}",
             produces = MediaType.APPLICATION_JSON_VALUE)
-    List<PositionDto> findByShipFlag(@PathVariable("shipFlag") Flag shipFlag) {
+    List<PositionAggregation> findByShipFlag(@PathVariable("shipFlag") Flag shipFlag) {
 
         log.info("Fetch all positions by flag {}", shipFlag.code());
 
-        return positionService.fetchByShipFlag(shipFlag);
+        return positionService.fetchByShipFlagGroupBySourceMmsi(shipFlag);//.fetchByShipFlag(shipFlag);
     }
 
     @GetMapping(value = "/spatio-temporal/point/{longitude}/{latitude}/{maxDistance}/{minDistance}/{dateTimeFrom}/{dateTimeTo}",
