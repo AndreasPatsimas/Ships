@@ -14,7 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-@Document(collection = "positions")
+@Document
 public class PositionAggregation {
 
     @JsonProperty("sourcemmsi")
