@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public interface PositionService {
@@ -60,4 +61,9 @@ public interface PositionService {
     List<PositionDto> fetchPositionsWithinCertainRadius(Double longitude, Double latitude, Double radius);
 
     List<PositionDto> fetchPositionsInsideBox(PositionInsideBoxDto positionInsideBoxDto);
+
+    Set<Integer> complexQuery(CoordinateDto coordinatesA,
+                              CoordinateDto coordinatesB,
+                              CoordinateDto coordinatesC,
+                              Long t);
 }

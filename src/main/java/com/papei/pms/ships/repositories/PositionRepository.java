@@ -49,6 +49,12 @@ public interface PositionRepository extends MongoRepository<Position, String> {
     @Query(value = "{'$and':[{location:{$near:{$geometry:{type:'Point', coordinates:[?0, ?1]}}}}]}")
     Page<Position> knn(Double longitude, Double latitude, Pageable pageable);
 
+    @Query(value = "{location:{$near:{$geometry:{type:'Point', coordinates:[?0, ?1]}}}}")
+    List<Position> complex(Double longitude, Double latitude);
+
+    @Query(value = "{'$and':[{t: {$lt: ?2}}, {location:{$near:{$geometry:{type:'Point', coordinates:[?0, ?1]}}}}]}")
+    List<Position> complexWithT(Double longitude, Double latitude, Long t);
+
     @Query(value = "{'$and':[{location:{$geoWithin:{$geometry:{type:'Polygon',coordinates :[[?0, ?1, ?2, ?3, ?4]]}}}}, " +
             "{t: {$gt: ?5}}, {t: {$lt: ?6}}]}")
     List<Position> findPositionsInsideBox(List<Double> coordinates1,

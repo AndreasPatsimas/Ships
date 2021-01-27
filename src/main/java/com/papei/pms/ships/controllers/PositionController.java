@@ -1,6 +1,7 @@
 package com.papei.pms.ships.controllers;
 
 import com.papei.pms.ships.domain.PositionAggregation;
+import com.papei.pms.ships.dto.ComplexRequestDto;
 import com.papei.pms.ships.dto.CoordinateDto;
 import com.papei.pms.ships.dto.PositionDto;
 import com.papei.pms.ships.dto.PositionInsideBoxDto;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 @CrossOrigin(origins = "*")
 @RequestMapping(value = "/positions")
@@ -167,5 +169,16 @@ public class PositionController {
 
         return positionService.fetchDistanceJoin(sourcemmsiOne, sourcemmsiTwo, value, LocalDateTime.parse(dateTimeFrom),
                 LocalDateTime.parse(dateTimeTo));
+    }
+
+    @PostMapping(value = "/complex",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    Set<Integer> complex(@RequestBody ComplexRequestDto complexRequestDto) {
+
+        log.info("Complex query");
+
+        return positionService.complexQuery(complexRequestDto.getCoordinatesA(), complexRequestDto.getCoordinatesB(),
+                complexRequestDto.getCoordinatesC(), complexRequestDto.getT());
     }
 }

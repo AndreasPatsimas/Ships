@@ -29,13 +29,11 @@ import org.springframework.util.ObjectUtils;
 import java.awt.geom.Point2D;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.util.stream.Collectors.toSet;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
 
 @Service
@@ -308,6 +306,54 @@ public class PositionServiceImpl implements PositionService {
         log.info("Fetch all positions inside box process end");
 
         return positions;
+    }
+
+    @Override
+    public Set<Integer> complexQuery(CoordinateDto coordinatesA,
+                                     CoordinateDto coordinatesB,
+                                     CoordinateDto coordinatesC,
+                                     Long t) {
+
+        log.info("Complex query process begins");
+
+        List<Position> positionsA = positionRepository.complex(coordinatesA.getLon(), coordinatesA.getLat());
+
+        Set<Integer> sourcemmsisA = positionsA.stream().map(Position::getSourcemmsi).collect(toSet());
+
+        List<Position> positionsB = positionRepository
+                .complexWithT(coordinatesB.getLon(), coordinatesB.getLat(), 3600L * 6L);
+
+        Set<Integer> sourcemmsisB = positionsB.stream().map(Position::getSourcemmsi).collect(toSet());
+
+        Set<Integer> intersectionAB = intersection(sourcemmsisA, sourcemmsisB);
+
+        List<Position> positionsC = positionRepository
+                .complexWithT(coordinatesC.getLon(), coordinatesC.getLat(), t);
+
+        Set<Integer> sourcemmsisC = positionsC.stream().map(Position::getSourcemmsi).collect(toSet());
+
+        Set<Integer> sourcemmsis = intersection(intersectionAB, sourcemmsisC);
+
+        log.info("Complex query process end");
+
+        return sourcemmsis;
+    }
+
+    private Set<Integer> intersection(Set<Integer> a, Set<Integer> b) {
+        // unnecessary; just an optimization to iterate over the smaller set
+        if (a.size() > b.size()) {
+            return intersection(b, a);
+        }
+
+        Set<Integer> results = new HashSet<>();
+
+        for (Integer element : a) {
+            if (b.contains(element)) {
+                results.add(element);
+            }
+        }
+
+        return results;
     }
 
     private Page<PositionDto> getPositionDtosPage(Pageable pageable, Page<Position> positions){

@@ -1,5 +1,7 @@
 package com.papei.pms.ships;
 
+import com.papei.pms.ships.dto.ComplexRequestDto;
+import com.papei.pms.ships.dto.CoordinateDto;
 import com.papei.pms.ships.dto.PositionInsideBoxDto;
 import com.papei.pms.ships.enums.Flag;
 import org.junit.FixMethodOrder;
@@ -147,5 +149,27 @@ public class PositionControllerTest extends BasicWiremockTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json;charset=UTF-8"));
+    }
+
+    @Test
+    public void k_findPositionsInsideBox() throws Exception {
+
+        CoordinateDto coordinatesA = CoordinateDto.builder().lon(-4.49544).lat(48.383663).build();
+        CoordinateDto coordinatesB = CoordinateDto.builder().lon(-3.49544).lat(48.383663).build();
+        CoordinateDto coordinatesC = CoordinateDto.builder().lon(-3.49544).lat(47.383663).build();
+
+        Long t = 1446472561L;
+
+        ComplexRequestDto complexRequestDto = ComplexRequestDto.builder()
+                .coordinatesA(coordinatesA)
+                .coordinatesB(coordinatesB)
+                .coordinatesC(coordinatesC)
+                .t(t)
+                .build();
+
+        this.mockMvc.perform(post("/positions/complex")
+                .content(asJsonString(complexRequestDto)).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(print());
     }
 }
