@@ -152,7 +152,16 @@ public class PositionControllerTest extends BasicWiremockTest {
     }
 
     @Test
-    public void k_findPositionsInsideBox() throws Exception {
+    public void k_findSimilarTrajectories() throws Exception {
+        this.mockMvc.perform(get("/positions/spatio-temporal/similar-trajectories/{sourcemmsiOne}/{sourcemmsiTwo}/{value}/{dateTimeFrom}/{dateTimeTo}",
+                SOURCEMMSI_ONE, SOURCEMMSI_TWO, VALUE, DATE_TIME_FROM, DATE_TIME_TO))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/json;charset=UTF-8"));
+    }
+
+    @Test
+    public void l_findPositionsInsideBox() throws Exception {
 
         CoordinateDto coordinatesA = CoordinateDto.builder().lon(-4.49544).lat(48.383663).build();
         CoordinateDto coordinatesB = CoordinateDto.builder().lon(-3.49544).lat(48.383663).build();

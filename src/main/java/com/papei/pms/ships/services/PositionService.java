@@ -24,11 +24,11 @@ public interface PositionService {
                                                 LocalDateTime dateTimeFrom,
                                                 LocalDateTime dateTimeTo);
 
-    List<List<CoordinateDto>> fetchDistanceJoin(Integer sourcemmsiOne,
-                                                Integer sourcemmsiTwo,
-                                                Double value);
-
-    List<PositionDto> fetchByShipFlag(Flag shipFlag);
+    List<List<CoordinateDto>> fetchSimilarTrajectories(Integer sourcemmsiOne,
+                                                       Integer sourcemmsiTwo,
+                                                       Double value,
+                                                       LocalDateTime dateTimeFrom,
+                                                       LocalDateTime dateTimeTo);
 
     List<PositionAggregation> fetchByShipFlagGroupBySourceMmsi(Flag shipFlag);
 

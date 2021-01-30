@@ -117,45 +117,43 @@ public class PositionServiceImpl implements PositionService {
     }
 
     @Override
-    public List<List<CoordinateDto>> fetchDistanceJoin(Integer sourcemmsiOne, Integer sourcemmsiTwo, Double value) {
+    public List<List<CoordinateDto>> fetchSimilarTrajectories(Integer sourcemmsiOne, Integer sourcemmsiTwo, Double value, LocalDateTime dateTimeFrom, LocalDateTime dateTimeTo) {
+        log.info("Similar Trajectories for mmsi_one: {} and mmsi_two: {} process begins", sourcemmsiOne, sourcemmsiTwo);
 
-        log.info("Distance join for mmsi_one: {} and mmsi_two: {} process begins", sourcemmsiOne, sourcemmsiTwo);
+        List<List<CoordinateDto>> similarTrajectories = new ArrayList<>();
 
-        List<List<CoordinateDto>> distanceJoin = new ArrayList<>();
+        List<Position> positionsOne = positionRepository.findPositionByMmsiAndT(sourcemmsiOne,
+                Date.from(dateTimeFrom.atZone(ZoneId.systemDefault()).toInstant()).getTime() / 1000,
+                Date.from(dateTimeTo.atZone(ZoneId.systemDefault()).toInstant()).getTime() / 1000);
 
-        List<Position> positionsOne = positionRepository.findPositionByMmsi(sourcemmsiOne);
+        List<Position> positionsTwo = positionRepository.findPositionByMmsiAndT(sourcemmsiTwo,
+                Date.from(dateTimeFrom.atZone(ZoneId.systemDefault()).toInstant()).getTime() / 1000,
+                Date.from(dateTimeTo.atZone(ZoneId.systemDefault()).toInstant()).getTime() / 1000);
 
-        List<Position> positionsTwo = positionRepository.findPositionByMmsi(sourcemmsiTwo);
+        positionsOne.forEach(positionOne -> {
 
-        positionsOne.forEach(positionOne -> positionsTwo.forEach(positionTwo -> {
+            List<Position> posTwo = positionsTwo.stream()
+                    .filter(pos -> pos.getT().equals(positionOne.getT()))
+                    .collect(Collectors.toList());
 
-            if (Point2D.distance(positionOne.getLocation().getCoordinates().getLon(), positionOne.getLocation().getCoordinates().getLat(),
-                    positionTwo.getLocation().getCoordinates().getLon(), positionTwo.getLocation().getCoordinates().getLat()) <= value)
-                distanceJoin.add(Stream
-                        .of(CoordinateDto.builder().lon(positionOne.getLocation().getCoordinates().getLon())
-                                        .lat(positionOne.getLocation().getCoordinates().getLat()).build(),
-                                CoordinateDto.builder().lon(positionTwo.getLocation().getCoordinates().getLon())
-                                        .lat(positionTwo.getLocation().getCoordinates().getLat()).build())
-                        .collect(Collectors.toList()));
-        }));
+            if (!posTwo.isEmpty()){
 
-        log.info("Distance join for mmsi_one: {} and mmsi_two: {} process end", sourcemmsiOne, sourcemmsiTwo);
+                Position positionTwo = posTwo.get(0);
 
-        return distanceJoin;
-    }
+                if (MathCalculations.distance(positionOne.getLocation().getCoordinates().getLon(), positionOne.getLocation().getCoordinates().getLat(),
+                        positionTwo.getLocation().getCoordinates().getLon(), positionTwo.getLocation().getCoordinates().getLat()) == value)
+                    similarTrajectories.add(Stream
+                            .of(CoordinateDto.builder().lon(positionOne.getLocation().getCoordinates().getLon())
+                                            .lat(positionOne.getLocation().getCoordinates().getLat()).build(),
+                                    CoordinateDto.builder().lon(positionTwo.getLocation().getCoordinates().getLon())
+                                            .lat(positionTwo.getLocation().getCoordinates().getLat()).build())
+                            .collect(Collectors.toList()));
+            }
+        });
 
-    @Override
-    public List<PositionDto> fetchByShipFlag(Flag shipFlag) {
+        log.info("Similar Trajectories for mmsi_one: {} and mmsi_two: {} process end", sourcemmsiOne, sourcemmsiTwo);
 
-        log.info("Fetch all positions by flag {} process begins", shipFlag.code());
-
-        List<Position> positionList = positionRepository.findPositionByShipFlag(shipFlag.code(), SORT_BY);
-
-        List<PositionDto> positions = convert(positionList);
-
-        log.info("Fetch all positions by flag {} process end", shipFlag.code());
-
-        return positions;
+        return similarTrajectories;
     }
 
     @Override

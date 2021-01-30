@@ -171,6 +171,21 @@ public class PositionController {
                 LocalDateTime.parse(dateTimeTo));
     }
 
+    @GetMapping(value = "/spatio-temporal/similar-trajectories/{sourcemmsiOne}/{sourcemmsiTwo}/{value}/{dateTimeFrom}/{dateTimeTo}",
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    List<List<CoordinateDto>> findSimilarTrajectories(@PathVariable("sourcemmsiOne") Integer sourcemmsiOne,
+                                                      @PathVariable("sourcemmsiTwo") Integer sourcemmsiTwo,
+                                                      @PathVariable("value") Double value,
+                                                      @PathVariable("dateTimeFrom") String dateTimeFrom,
+                                                      @PathVariable("dateTimeTo") String dateTimeTo) {
+
+        log.info("Similar Trajectories for mmsi_one: {} and mmsi_two: {}", sourcemmsiOne, sourcemmsiTwo);
+
+
+        return positionService.fetchSimilarTrajectories(sourcemmsiOne, sourcemmsiTwo, value, LocalDateTime.parse(dateTimeFrom),
+                LocalDateTime.parse(dateTimeTo));
+    }
+
     @PostMapping(value = "/complex",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
