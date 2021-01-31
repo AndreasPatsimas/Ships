@@ -75,30 +75,18 @@ public class PositionController {
         return positionService.fetchPositionsNearGivenPoint(longitude, latitude, maxDistance, minDistance);
     }
 
-    @GetMapping(value = "/spatio-temporal/k-nn/{longitude}/{latitude}/{dateTimeFrom}/{dateTimeTo}",
+    @GetMapping(value = "/spatio-temporal/k-nn/{longitude}/{latitude}/{dateTimeFrom}/{dateTimeTo}/{limit}",
             produces = MediaType.APPLICATION_JSON_VALUE)
-    Page<PositionDto> knn(@RequestParam Integer page,
-                         @RequestParam Integer pageSize,
-                         @RequestParam(required = false) String sortBy,
-                         @RequestParam(required = false) String sortDirection,
-                         @PathVariable("longitude") Double longitude,
+    List<PositionDto> knn(@PathVariable("longitude") Double longitude,
                          @PathVariable("latitude") Double latitude,
                          @PathVariable("dateTimeFrom") String dateTimeFrom,
-                         @PathVariable("dateTimeTo") String dateTimeTo) {
+                         @PathVariable("dateTimeTo") String dateTimeTo,
+                         @PathVariable("limit") Integer limit) {
 
         log.info("K-nn near to our point[{}, {}]", longitude, latitude);
 
-        Pageable pageable;
-
-        if (ObjectUtils.isEmpty(sortBy) || ObjectUtils.isEmpty(sortDirection))
-            pageable = PageRequest.of(page, pageSize);
-        else {
-            Sort sort = Sort.by(Sort.Direction.fromString(sortDirection), sortBy);
-            pageable = PageRequest.of(page, pageSize, sort);
-        }
-
         return positionService.knn(longitude, latitude,
-                LocalDateTime.parse(dateTimeFrom), LocalDateTime.parse(dateTimeTo), pageable);
+                LocalDateTime.parse(dateTimeFrom), LocalDateTime.parse(dateTimeTo), limit);
     }
 
     @GetMapping(value = "/spatial/k-nn/{longitude}/{latitude}/{limit}",

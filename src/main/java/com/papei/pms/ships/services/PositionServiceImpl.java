@@ -219,20 +219,36 @@ public class PositionServiceImpl implements PositionService {
     }
 
     @Override
-    public Page<PositionDto> knn(Double longitude,
+    public List<PositionDto> knn(Double longitude,
                                  Double latitude,
                                  LocalDateTime dateTimeFrom,
                                  LocalDateTime dateTimeTo,
-                                 Pageable pageable) {
+                                 Integer limit) {
 
         log.info("K-nn near to our point[{}, {}] process begins", longitude, latitude);
 
-        Page<Position> positions = positionRepository.knn(longitude, latitude,
-                Date.from(dateTimeFrom.atZone(ZoneId.systemDefault()).toInstant()).getTime() / 1000,
-                Date.from(dateTimeTo.atZone(ZoneId.systemDefault()).toInstant()).getTime() / 1000,
-                pageable);
+        List<Criteria> criteriaList = new ArrayList<>();
 
-        return getPositionDtosPage(pageable, positions);
+        criteriaList.add(Criteria.where("location").nearSphere(new GeoJsonPoint(-4.4657183, 48.38249)));
+        Long tFrom = dateTimeFrom.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli() / 1000;
+        Long tTo = dateTimeTo.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli() / 1000;
+        criteriaList.add(Criteria.where("t").gte(tFrom));
+        criteriaList.add(Criteria.where("t").lte(tTo));
+
+        Criteria criteria = new Criteria().andOperator(criteriaList.toArray(new Criteria[]{}));
+
+        Query query = new Query(criteria);
+        query.limit(limit);
+
+        List<Position> positions = mongoTemplate.find(query, Position.class);
+
+        List<PositionDto> positionDtoList = positions.stream()
+                .map(position -> conversionService.convert(position, PositionDto.class))
+                .collect(Collectors.toList());
+
+        log.info("K-nn near to our point[{}, {}] process end", longitude, latitude);
+
+        return positionDtoList;
     }
 
     @Override
@@ -250,6 +266,8 @@ public class PositionServiceImpl implements PositionService {
         List<PositionDto> positionDtoList = positions.stream()
                 .map(position -> conversionService.convert(position, PositionDto.class))
                 .collect(Collectors.toList());
+
+        log.info("K-nn near to our point[{}, {}] process end", longitude, latitude);
 
         return positionDtoList;
     }

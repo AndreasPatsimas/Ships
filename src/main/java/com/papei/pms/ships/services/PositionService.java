@@ -44,11 +44,11 @@ public interface PositionService {
                                                    Integer maxDistance,
                                                    Integer minDistance);
 
-    Page<PositionDto> knn(Double longitude,
+    List<PositionDto> knn(Double longitude,
                           Double latitude,
                           LocalDateTime dateTimeFrom,
                           LocalDateTime dateTimeTo,
-                          Pageable pageable);
+                          Integer limit);
 
     List<PositionDto> knn(Double longitude, Double latitude, Integer limit);
 
