@@ -229,7 +229,7 @@ public class PositionServiceImpl implements PositionService {
 
         List<Criteria> criteriaList = new ArrayList<>();
 
-        criteriaList.add(Criteria.where("location").nearSphere(new GeoJsonPoint(-4.4657183, 48.38249)));
+        criteriaList.add(Criteria.where("location").nearSphere(new GeoJsonPoint(longitude, latitude)));
         Long tFrom = dateTimeFrom.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli() / 1000;
         Long tTo = dateTimeTo.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli() / 1000;
         criteriaList.add(Criteria.where("t").gte(tFrom));
