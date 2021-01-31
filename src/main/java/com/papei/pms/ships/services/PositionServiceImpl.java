@@ -256,7 +256,7 @@ public class PositionServiceImpl implements PositionService {
 
         log.info("K-nn near to our point[{}, {}] process begins", longitude, latitude);
 
-        Criteria criteria = Criteria.where("location").nearSphere(new GeoJsonPoint(-4.4657183, 48.38249));
+        Criteria criteria = Criteria.where("location").nearSphere(new GeoJsonPoint(longitude, latitude));
 
         Query query = new Query(criteria);
         query.limit(limit);
