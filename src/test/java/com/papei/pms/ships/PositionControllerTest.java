@@ -32,6 +32,7 @@ public class PositionControllerTest extends BasicWiremockTest {
 
     private final Integer SOURCEMMSI_ONE = 228051000;
     private final Integer SOURCEMMSI_TWO = 245257000;
+    private final Integer LIMIT = 1000;
     private final Double VALUE = 12.0;
     private final Flag SHIP_FLAG = Flag.NETHERLANDS;
     private final Double LONGITUDE = -4.4657183;
@@ -92,8 +93,8 @@ public class PositionControllerTest extends BasicWiremockTest {
 
     @Test
     public void f_knn() throws Exception {
-        this.mockMvc.perform(get("/positions/spatial/k-nn/{longitude}/{latitude}?sortBy=t&sortDirection=ASC&page=0&pageSize=10",
-                LONGITUDE, LATITUDE))
+        this.mockMvc.perform(get("/positions/spatial/k-nn/{longitude}/{latitude}/{limit}",
+                LONGITUDE, LATITUDE, LIMIT))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json;charset=UTF-8"));

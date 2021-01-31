@@ -50,7 +50,7 @@ public interface PositionService {
                           LocalDateTime dateTimeTo,
                           Pageable pageable);
 
-    Page<PositionDto> knn(Double longitude, Double latitude, Pageable pageable);
+    List<PositionDto> knn(Double longitude, Double latitude, Integer limit);
 
     List<PositionDto> fetchPositionsWithinCertainRadius(Double longitude,
                                                         Double latitude,

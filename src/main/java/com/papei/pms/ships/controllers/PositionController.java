@@ -101,27 +101,15 @@ public class PositionController {
                 LocalDateTime.parse(dateTimeFrom), LocalDateTime.parse(dateTimeTo), pageable);
     }
 
-    @GetMapping(value = "/spatial/k-nn/{longitude}/{latitude}",
+    @GetMapping(value = "/spatial/k-nn/{longitude}/{latitude}/{limit}",
             produces = MediaType.APPLICATION_JSON_VALUE)
-    Page<PositionDto> knn(@RequestParam Integer page,
-                         @RequestParam Integer pageSize,
-                         @RequestParam(required = false) String sortBy,
-                         @RequestParam(required = false) String sortDirection,
-                         @PathVariable("longitude") Double longitude,
-                         @PathVariable("latitude") Double latitude) {
+    List<PositionDto> knn(@PathVariable("longitude") Double longitude,
+                          @PathVariable("latitude") Double latitude,
+                          @PathVariable("limit") Integer limit) {
 
         log.info("K-nn near to our point[{}, {}]", longitude, latitude);
 
-        Pageable pageable;
-
-        if (ObjectUtils.isEmpty(sortBy) || ObjectUtils.isEmpty(sortDirection))
-            pageable = PageRequest.of(page, pageSize);
-        else {
-            Sort sort = Sort.by(Sort.Direction.fromString(sortDirection), sortBy);
-            pageable = PageRequest.of(page, pageSize, sort);
-        }
-
-        return positionService.knn(longitude, latitude, pageable);
+        return positionService.knn(longitude, latitude, limit);
     }
 
     @GetMapping(value = "/spatio-temporal/circle/{longitude}/{latitude}/{radius}/{dateTimeFrom}/{dateTimeTo}",

@@ -22,7 +22,10 @@ import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.GroupOperation;
 import org.springframework.data.mongodb.core.aggregation.MatchOperation;
 import org.springframework.data.mongodb.core.aggregation.SortOperation;
+import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.repository.support.PageableExecutionUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
@@ -233,12 +236,22 @@ public class PositionServiceImpl implements PositionService {
     }
 
     @Override
-    public Page<PositionDto> knn(Double longitude, Double latitude, Pageable pageable) {
+    public List<PositionDto> knn(Double longitude, Double latitude, Integer limit) {
+
         log.info("K-nn near to our point[{}, {}] process begins", longitude, latitude);
 
-        Page<Position> positions = positionRepository.knn(longitude, latitude, pageable);
+        Criteria criteria = Criteria.where("location").nearSphere(new GeoJsonPoint(-4.4657183, 48.38249));
 
-        return getPositionDtosPage(pageable, positions);
+        Query query = new Query(criteria);
+        query.limit(limit);
+
+        List<Position> positions = mongoTemplate.find(query, Position.class);
+
+        List<PositionDto> positionDtoList = positions.stream()
+                .map(position -> conversionService.convert(position, PositionDto.class))
+                .collect(Collectors.toList());
+
+        return positionDtoList;
     }
 
     @Override
